@@ -1,0 +1,31 @@
+{
+  "name": "@vyantra/tokens",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "description": "Design tokens for VyantraUI — colors, spacing, typography",
+  "license": "MIT",
+  "exports": {
+    ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" },
+    "./css": "./dist/tokens.css"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc && node scripts/build-css.js",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist node_modules"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "peerDependencies": {
+    "react": "^18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ashishvora1997/vyantra-ui.git"
+  },
+  "homepage": "https://github.com/ashishvora1997/vyantra-ui#readme"
+  }

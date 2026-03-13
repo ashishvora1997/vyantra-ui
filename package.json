@@ -1,0 +1,22 @@
+{
+  "name": "@vyantra/monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r --parallel dev",
+    "test": "pnpm -r test",
+    "test:coverage": "pnpm -r test:coverage",
+    "typecheck": "pnpm -r typecheck",
+    "ui:build": "pnpm --filter @vyantra/ui build",
+    "tokens:build": "pnpm --filter @vyantra/tokens build",
+    "clean": "pnpm -r clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "prettier": "^3.2.5"
+  },
+  "engines": { "node": ">=18.0.0", "pnpm": ">=9.0.0" },
+  "packageManager": "pnpm@9.1.0"
+}

@@ -1,0 +1,465 @@
+/* =============================================================================
+   BUTTON  —  packages/ui/src/components/Button/Button.css
+   ─────────────────────────────────────────────────────────────────────────────
+   100% token-based — zero hardcoded colors.
+   Themes work automatically: change tokens on [data-theme] and every
+   button variant updates with no CSS changes needed here.
+
+   Architecture:
+   1. Intent classes (.btn--intent-*) set --btn-* local vars from semantic tokens
+   2. Appearance classes (.btn--appearance-*) consume those --btn-* vars
+   → 35 combos from 7 intents × 5 appearances, defined in ~40 lines
+   ============================================================================= */
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes btn-ripple {
+  from {
+    transform: scale(0);
+    opacity: 0.35;
+  }
+
+  to {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+/* =============================================================================
+   BASE
+   ============================================================================= */
+.btn {
+  -webkit-appearance: none;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  vertical-align: middle;
+  flex-shrink: 0;
+  white-space: nowrap;
+  text-decoration: none;
+  user-select: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+
+  font-family: var(--font-sans);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-none);
+  letter-spacing: 0;
+
+  border-width: 1px;
+  border-style: solid;
+  border-color: transparent;
+  background: transparent;
+  color: inherit;
+
+  transition:
+    background-color var(--duration-normal) var(--ease-default),
+    border-color var(--duration-normal) var(--ease-default),
+    color var(--duration-normal) var(--ease-default),
+    box-shadow var(--duration-normal) var(--ease-default),
+    transform var(--duration-fast) var(--ease-out),
+    opacity var(--duration-normal) var(--ease-default);
+}
+
+.btn:focus {
+  outline: none;
+}
+.btn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--color-focus-ring-offset),
+    0 0 0 4px var(--btn-focus, var(--color-border-focus));
+}
+.btn:active:not(:disabled):not([aria-disabled='true']):not(.btn--loading) {
+  transform: scale(0.97);
+}
+
+/* =============================================================================
+   SIZES
+   ============================================================================= */
+.btn--size-2xs {
+  height: 22px;
+  min-width: 22px;
+  padding: 0 var(--spacing-2);
+  font-size: var(--text-xs);
+  gap: var(--spacing-1);
+  --btn-icon-size: 12px;
+}
+.btn--size-xs {
+  height: 26px;
+  min-width: 26px;
+  padding: 0 var(--spacing-2-5);
+  font-size: var(--text-xs);
+  gap: var(--spacing-1-5);
+  --btn-icon-size: 13px;
+}
+.btn--size-sm {
+  height: 30px;
+  min-width: 30px;
+  padding: 0 var(--spacing-3);
+  font-size: var(--text-sm);
+  gap: var(--spacing-1-5);
+  --btn-icon-size: 14px;
+}
+.btn--size-md {
+  height: 36px;
+  min-width: 36px;
+  padding: 0 var(--spacing-4);
+  font-size: var(--text-sm);
+  gap: var(--spacing-2);
+  --btn-icon-size: 15px;
+}
+.btn--size-lg {
+  height: 42px;
+  min-width: 42px;
+  padding: 0 var(--spacing-5);
+  font-size: var(--text-md);
+  gap: var(--spacing-2);
+  --btn-icon-size: 16px;
+}
+.btn--size-xl {
+  height: 48px;
+  min-width: 48px;
+  padding: 0 var(--spacing-6);
+  font-size: var(--text-lg);
+  gap: var(--spacing-2-5);
+  --btn-icon-size: 18px;
+  font-weight: var(--weight-semibold);
+}
+.btn--size-2xl {
+  height: 56px;
+  min-width: 56px;
+  padding: 0 var(--spacing-8);
+  font-size: var(--text-xl);
+  gap: var(--spacing-3);
+  --btn-icon-size: 20px;
+  font-weight: var(--weight-semibold);
+}
+
+/* =============================================================================
+   RADIUS
+   ============================================================================= */
+.btn--radius-none {
+  border-radius: var(--radius-none);
+}
+.btn--radius-xs {
+  border-radius: var(--radius-xs);
+}
+.btn--radius-sm {
+  border-radius: var(--radius-sm);
+}
+.btn--radius-md {
+  border-radius: var(--radius-md);
+}
+.btn--radius-lg {
+  border-radius: var(--radius-lg);
+}
+.btn--radius-xl {
+  border-radius: var(--radius-xl);
+}
+.btn--radius-2xl {
+  border-radius: var(--radius-2xl);
+}
+.btn--radius-full {
+  border-radius: var(--radius-full);
+}
+
+/* =============================================================================
+   WIDTH / ICON-ONLY
+   ============================================================================= */
+.btn--width-auto {
+  width: auto;
+}
+.btn--width-full {
+  width: 100%;
+}
+.btn--width-fit {
+  width: fit-content;
+  min-width: 0;
+}
+
+.btn--icon-only {
+  padding: 0 !important;
+  aspect-ratio: 1/1;
+  width: auto;
+  min-width: 0;
+}
+
+/* =============================================================================
+   INNER ELEMENTS
+   ============================================================================= */
+.btn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--btn-icon-size, 15px);
+  height: var(--btn-icon-size, 15px);
+  pointer-events: none;
+}
+.btn__icon svg,
+.btn__icon img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.btn__label {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn__slot-start,
+.btn__slot-end {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.btn__spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--btn-icon-size, 15px);
+  height: var(--btn-icon-size, 15px);
+  animation: btn-spin 0.65s linear infinite;
+  pointer-events: none;
+}
+.btn__spinner svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* =============================================================================
+   STATE MODIFIERS
+   ============================================================================= */
+.btn--loading {
+  cursor: wait;
+  pointer-events: none;
+}
+
+.btn:disabled,
+.btn[aria-disabled='true'] {
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+.btn--elevated {
+  box-shadow: var(--shadow-sm);
+}
+.btn--elevated:hover:not(:disabled):not([aria-disabled='true']):not(.btn--loading) {
+  box-shadow: var(--shadow-md);
+}
+
+.btn--uppercase .btn__label {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.btn--compact {
+  min-width: 0;
+}
+
+.btn--selected::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  border: 2px solid currentColor;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.btn__ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: currentColor;
+
+  transform: scale(0);
+  opacity: 0.25;
+
+  pointer-events: none;
+
+  animation: btn-ripple 600ms ease-out forwards;
+}
+
+/* =============================================================================
+   INTENT → local CSS vars  (the only place colors are assigned)
+   Each intent maps semantic design tokens to --btn-* vars.
+   Appearances consume those vars — so appearances are defined once for all intents.
+   ============================================================================= */
+
+.btn--intent-primary {
+  --btn-color: var(--color-primary);
+  --btn-hover: var(--color-primary-hover);
+  --btn-active: var(--color-primary-active);
+  --btn-subtle: var(--color-primary-subtle);
+  --btn-muted: var(--color-primary-muted);
+  --btn-border: var(--color-primary-border);
+  --btn-text: var(--color-primary-text);
+  --btn-on: var(--color-on-primary);
+  --btn-focus: var(--color-primary);
+}
+.btn--intent-secondary {
+  --btn-color: var(--color-secondary);
+  --btn-hover: var(--color-secondary-hover);
+  --btn-active: var(--color-secondary-active);
+  --btn-subtle: var(--color-secondary-subtle);
+  --btn-muted: var(--color-secondary-muted);
+  --btn-border: var(--color-secondary-border);
+  --btn-text: var(--color-secondary-text);
+  --btn-on: var(--color-on-secondary);
+  --btn-focus: var(--color-secondary);
+}
+.btn--intent-neutral {
+  --btn-color: var(--color-neutral);
+  --btn-hover: var(--color-neutral-hover);
+  --btn-active: var(--color-neutral-active);
+  --btn-subtle: var(--color-neutral-subtle);
+  --btn-muted: var(--color-neutral-muted);
+  --btn-border: var(--color-neutral-border);
+  --btn-text: var(--color-neutral-text);
+  --btn-on: var(--color-on-neutral);
+  --btn-focus: var(--color-border-focus);
+}
+.btn--intent-success {
+  --btn-color: var(--color-success);
+  --btn-hover: var(--color-success-hover);
+  --btn-active: var(--color-success-active);
+  --btn-subtle: var(--color-success-subtle);
+  --btn-muted: var(--color-success-muted);
+  --btn-border: var(--color-success-border);
+  --btn-text: var(--color-success-text);
+  --btn-on: var(--color-on-success);
+  --btn-focus: var(--color-success);
+}
+.btn--intent-warning {
+  --btn-color: var(--color-warning);
+  --btn-hover: var(--color-warning-hover);
+  --btn-active: var(--color-warning-active);
+  --btn-subtle: var(--color-warning-subtle);
+  --btn-muted: var(--color-warning-muted);
+  --btn-border: var(--color-warning-border);
+  --btn-text: var(--color-warning-text);
+  --btn-on: var(--color-on-warning);
+  --btn-focus: var(--color-warning);
+}
+.btn--intent-danger {
+  --btn-color: var(--color-danger);
+  --btn-hover: var(--color-danger-hover);
+  --btn-active: var(--color-danger-active);
+  --btn-subtle: var(--color-danger-subtle);
+  --btn-muted: var(--color-danger-muted);
+  --btn-border: var(--color-danger-border);
+  --btn-text: var(--color-danger-text);
+  --btn-on: var(--color-on-danger);
+  --btn-focus: var(--color-danger);
+}
+.btn--intent-info {
+  --btn-color: var(--color-info);
+  --btn-hover: var(--color-info-hover);
+  --btn-active: var(--color-info-active);
+  --btn-subtle: var(--color-info-subtle);
+  --btn-muted: var(--color-info-muted);
+  --btn-border: var(--color-info-border);
+  --btn-text: var(--color-info-text);
+  --btn-on: var(--color-on-info);
+  --btn-focus: var(--color-info);
+}
+
+/* =============================================================================
+   APPEARANCES  (defined once — works for ALL 7 intents via --btn-* vars)
+   ============================================================================= */
+
+/* SOLID */
+.btn--appearance-solid {
+  background-color: var(--btn-color);
+  color: var(--btn-on);
+  border-color: var(--btn-color);
+}
+.btn--appearance-solid:hover:not(:disabled):not(.btn--loading) {
+  background-color: var(--btn-hover);
+  border-color: var(--btn-hover);
+}
+.btn--appearance-solid:active:not(:disabled):not(.btn--loading),
+.btn--appearance-solid.btn--active {
+  background-color: var(--btn-active);
+  border-color: var(--btn-active);
+}
+
+/* OUTLINE */
+.btn--appearance-outline {
+  background-color: transparent;
+  color: var(--btn-text);
+  border-color: var(--btn-color);
+}
+.btn--appearance-outline:hover:not(:disabled):not(.btn--loading) {
+  background-color: var(--btn-subtle);
+  border-color: var(--btn-hover);
+  color: var(--btn-hover);
+}
+.btn--appearance-outline:active:not(:disabled):not(.btn--loading),
+.btn--appearance-outline.btn--active {
+  background-color: var(--btn-muted);
+}
+
+/* GHOST */
+.btn--appearance-ghost {
+  background-color: transparent;
+  color: var(--btn-text);
+  border-color: transparent;
+}
+.btn--appearance-ghost:hover:not(:disabled):not(.btn--loading) {
+  background-color: var(--btn-subtle);
+  color: var(--btn-hover);
+}
+.btn--appearance-ghost:active:not(:disabled):not(.btn--loading),
+.btn--appearance-ghost.btn--active {
+  background-color: var(--btn-muted);
+}
+
+/* SOFT */
+.btn--appearance-soft {
+  background-color: var(--btn-subtle);
+  color: var(--btn-text);
+  border-color: transparent;
+}
+.btn--appearance-soft:hover:not(:disabled):not(.btn--loading) {
+  background-color: var(--btn-muted);
+  color: var(--btn-hover);
+}
+.btn--appearance-soft:active:not(:disabled):not(.btn--loading),
+.btn--appearance-soft.btn--active {
+  background-color: var(--btn-border);
+}
+
+/* LINK */
+.btn--appearance-link {
+  background-color: transparent;
+  color: var(--btn-text);
+  border-color: transparent;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  padding-left: 0;
+  padding-right: 0;
+  min-width: 0;
+}
+.btn--appearance-link:hover:not(:disabled):not(.btn--loading) {
+  color: var(--btn-hover);
+  text-decoration-thickness: 2px;
+}
