@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { Button } from '@vyantra/ui';
 import type { ButtonIntent, ButtonAppearance, ButtonSize, ButtonRadius } from '@vyantra/ui';
-import type { Intent, Appearance, Size, Radius } from '../../components/ControlsBar';
 import { Icon } from '../../components/Icon';
 
-// ─── Local config type (maps to ControlsBar types) ───────────────────────────
+// ─── Config ───────────────────────────────────────────────────────────────────
+
 interface Config {
-  intent: Intent;
-  appearance: Appearance;
-  size: Size;
-  radius: Radius;
+  intent: ButtonIntent;
+  appearance: ButtonAppearance;
+  size: ButtonSize;
+  radius: ButtonRadius;
   loading: boolean;
   disabled: boolean;
   startIcon: boolean;
@@ -30,9 +30,9 @@ const DEFAULT: Config = {
 };
 
 // ─── Code builder ─────────────────────────────────────────────────────────────
+
 const buildCode = (cfg: Config): string => {
-  const props = [];
-  // const lines = [];
+  const props: string[] = [];
   if (cfg.intent !== 'primary') props.push(`  intent="${cfg.intent}"`);
   if (cfg.appearance !== 'solid') props.push(`  appearance="${cfg.appearance}"`);
   if (cfg.size !== 'md') props.push(`  size="${cfg.size}"`);
@@ -43,24 +43,15 @@ const buildCode = (cfg: Config): string => {
   if (cfg.startIcon) props.push('  startIcon={<ArrowIcon />}');
   if (cfg.endIcon) props.push('  endIcon={<ExternalIcon />}');
 
-  // if (props.length) {
-  //   lines.push('<Button')
-  //   lines.push(...props);
-  //   lines.push('>');
-  // } else {
-  //   lines.push('<Button>');
-  // }
-  // lines.push('  Click me');
-  // lines.push('</Button>');
-  const lines = [
+  return [
     ...(props.length ? ['<Button', ...props, '>'] : ['<Button>']),
     '  Click me',
     '</Button>',
-  ];
-  return lines.join('\n');
+  ].join('\n');
 };
 
 // ─── Constants ────────────────────────────────────────────────────────────────
+
 const INTENTS: ButtonIntent[] = [
   'primary',
   'secondary',
@@ -75,6 +66,7 @@ const SIZES: ButtonSize[] = ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl'];
 const RADII: ButtonRadius[] = ['none', 'sm', 'md', 'lg', 'xl', 'full'];
 
 // ─── Chip helpers ─────────────────────────────────────────────────────────────
+
 const Chip: React.FC<{ label: string; active: boolean; onClick: () => void }> = ({
   label,
   active,
@@ -84,6 +76,7 @@ const Chip: React.FC<{ label: string; active: boolean; onClick: () => void }> = 
     {label}
   </button>
 );
+
 const Toggle: React.FC<{ label: string; active: boolean; onClick: () => void }> = ({
   label,
   active,
@@ -95,13 +88,14 @@ const Toggle: React.FC<{ label: string; active: boolean; onClick: () => void }> 
   </button>
 );
 
-// ─── Props table ──────────────────────────────────────────────────────────────
+// ─── Props table data ─────────────────────────────────────────────────────────
+
 const PROPS = [
   {
     prop: 'intent',
     type: '"primary"|"secondary"|"neutral"|"success"|"warning"|"danger"|"info"',
     def: '"primary"',
-    desc: 'Color and semantic role of the button',
+    desc: 'Color and semantic role',
   },
   {
     prop: 'appearance',
@@ -115,29 +109,74 @@ const PROPS = [
     def: '"md"',
     desc: 'Height, padding and font size',
   },
-  { prop: 'radius', type: '"none"|"sm"|"md"|"lg"|"xl"|"full"', def: '"md"', desc: 'Border radius' },
-  { prop: 'loading', type: 'boolean', def: 'false', desc: 'Shows spinner, prevents interaction' },
-  { prop: 'loadingText', type: 'string', def: '—', desc: 'Accessible label while loading' },
+  {
+    prop: 'radius',
+    type: '"none"|"xs"|"sm"|"md"|"lg"|"xl"|"2xl"|"full"',
+    def: '"md"',
+    desc: 'Border radius shape',
+  },
+  { prop: 'loading', type: 'boolean', def: 'false', desc: 'Shows spinner, disables interaction' },
+  { prop: 'loadingText', type: 'string', def: '—', desc: 'Label while loading' },
+  {
+    prop: 'spinnerPlacement',
+    type: '"start"|"end"',
+    def: '"start"',
+    desc: 'Spinner position relative to label',
+  },
+  { prop: 'spinner', type: 'ReactNode', def: '—', desc: 'Custom spinner replaces built-in SVG' },
   { prop: 'disabled', type: 'boolean', def: 'false', desc: 'Prevents all interaction' },
+  { prop: 'active', type: 'boolean', def: 'false', desc: 'Active / pressed visual state' },
+  {
+    prop: 'selected',
+    type: 'boolean',
+    def: 'false',
+    desc: 'Selection ring — useful for toggle groups',
+  },
   { prop: 'elevated', type: 'boolean', def: 'false', desc: 'Adds drop shadow' },
+  { prop: 'compact', type: 'boolean', def: 'false', desc: 'Removes min-width constraint' },
+  { prop: 'uppercase', type: 'boolean', def: 'false', desc: 'Uppercase label with letter spacing' },
   { prop: 'startIcon', type: 'ReactNode', def: '—', desc: 'Icon before the label' },
   { prop: 'endIcon', type: 'ReactNode', def: '—', desc: 'Icon after the label' },
-  { prop: 'iconOnly', type: 'ReactNode', def: '—', desc: 'Square/circle icon-only button' },
+  {
+    prop: 'iconOnly',
+    type: 'ReactNode',
+    def: '—',
+    desc: 'Icon-only button — pair with aria-label',
+  },
+  { prop: 'slotStart', type: 'ReactNode', def: '—', desc: 'Content at start, before startIcon' },
+  { prop: 'slotEnd', type: 'ReactNode', def: '—', desc: 'Content at end, after endIcon' },
   { prop: 'width', type: '"auto"|"full"|"fit"', def: '"auto"', desc: 'Width behaviour' },
   { prop: 'href', type: 'string', def: '—', desc: 'Renders as <a> anchor tag' },
+  { prop: 'target', type: 'string', def: '—', desc: 'Link target (used with href)' },
+  {
+    prop: 'asChild',
+    type: 'boolean',
+    def: 'false',
+    desc: 'Merges styles onto single child element',
+  },
   { prop: 'as', type: 'ElementType', def: '"button"', desc: 'Polymorphic root element' },
-  { prop: 'asChild', type: 'boolean', def: 'false', desc: 'Merges props onto single child' },
-  { prop: 'aria-label', type: 'string', def: '—', desc: 'Required for iconOnly buttons' },
+  {
+    prop: 'classNames',
+    type: 'Partial<Record<ButtonSlot, string>>',
+    def: '—',
+    desc: 'CSS class names per slot: root | label | icon | spinner',
+  },
+  { prop: 'aria-label', type: 'string', def: '—', desc: 'Required when using iconOnly' },
+  {
+    prop: 'type',
+    type: '"button"|"submit"|"reset"',
+    def: '"button"',
+    desc: 'HTML button type attribute',
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  BUTTON PAGE
 // ─────────────────────────────────────────────────────────────────────────────
+
 export const ButtonPage: React.FC = () => {
   const [cfg, setCfg] = useState<Config>(DEFAULT);
   const patch = (p: Partial<Config>) => setCfg((prev) => ({ ...prev, ...p }));
-
-  // const [bg, setBg] = useState<'dark'|'light'|'gradient'>('dark');
 
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const click = (id: string) => {
@@ -177,9 +216,12 @@ export const ButtonPage: React.FC = () => {
       <div className="page-heading">
         <div className="page-heading-eyebrow">components</div>
         <h1>
-          Button <span className="badge-count">25 variants</span>
+          Button <span className="badge-count">25+ variants</span>
         </h1>
-        <p>intent × appearance × size × radius — fully composable</p>
+        <p>
+          intent × appearance × size × radius — fully composable. Supports icons, loading state,
+          ripple, asChild pattern and full theming.
+        </p>
         <div className="prop-badges">
           {[
             'intent',
@@ -191,9 +233,13 @@ export const ButtonPage: React.FC = () => {
             'startIcon',
             'endIcon',
             'iconOnly',
+            'slotStart',
+            'slotEnd',
             'elevated',
+            'asChild',
             'href',
             'as',
+            'classNames',
           ].map((p) => (
             <span className="prop-badge" key={p}>
               {p}
@@ -202,7 +248,7 @@ export const ButtonPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ══ PLAYGROUND ══ */}
+      {/* ══ LIVE PLAYGROUND ══ */}
       <div className="section">
         <div className="section-header">
           <div className="section-num">★</div>
@@ -212,12 +258,12 @@ export const ButtonPage: React.FC = () => {
 
         <div className="playground">
           {/* Preview */}
-          <div className={`playground-preview`}>
+          <div className="playground-preview">
             <Button
-              intent={cfg.intent as ButtonIntent}
-              appearance={cfg.appearance as ButtonAppearance}
-              size={cfg.size as ButtonSize}
-              radius={cfg.radius as ButtonRadius}
+              intent={cfg.intent}
+              appearance={cfg.appearance}
+              size={cfg.size}
+              radius={cfg.radius}
               loading={cfg.loading}
               disabled={cfg.disabled}
               elevated={cfg.elevated}
@@ -238,7 +284,7 @@ export const ButtonPage: React.FC = () => {
                     key={i}
                     label={i}
                     active={cfg.intent === i}
-                    onClick={() => patch({ intent: i as Intent })}
+                    onClick={() => patch({ intent: i })}
                   />
                 ))}
               </div>
@@ -252,7 +298,7 @@ export const ButtonPage: React.FC = () => {
                     key={a}
                     label={a}
                     active={cfg.appearance === a}
-                    onClick={() => patch({ appearance: a as Appearance })}
+                    onClick={() => patch({ appearance: a })}
                   />
                 ))}
               </div>
@@ -266,7 +312,7 @@ export const ButtonPage: React.FC = () => {
                     key={s}
                     label={s}
                     active={cfg.size === s}
-                    onClick={() => patch({ size: s as Size })}
+                    onClick={() => patch({ size: s })}
                   />
                 ))}
               </div>
@@ -280,7 +326,7 @@ export const ButtonPage: React.FC = () => {
                     key={r}
                     label={r}
                     active={cfg.radius === r}
-                    onClick={() => patch({ radius: r as Radius })}
+                    onClick={() => patch({ radius: r })}
                   />
                 ))}
               </div>
@@ -316,15 +362,6 @@ export const ButtonPage: React.FC = () => {
                 />
               </div>
             </div>
-
-            {/* <div className="pg-group">
-              <div className="pg-label">Preview BG</div>
-              <div className="pg-options">
-                {(['dark','light','gradient'] as const).map(b => (
-                  <button key={b} className={`pg-btn ${bg===b?'active':''}`} onClick={() => setBg(b)}>{b}</button>
-                ))}
-              </div>
-            </div> */}
           </div>
 
           {/* Code output */}
@@ -345,7 +382,6 @@ export const ButtonPage: React.FC = () => {
                   color: '#94a3b8',
                   fontFamily: 'var(--font-mono)',
                   cursor: 'pointer',
-                  transition: 'all 100ms',
                 }}
               >
                 {copied ? '✓ copied' : 'copy'}
@@ -451,18 +487,15 @@ export const ButtonPage: React.FC = () => {
         <div className="section-header">
           <div className="section-num">2</div>
           <div className="section-title">Special Variants</div>
-          <div className="section-desc">gradient · glass · link</div>
+          <div className="section-desc">link · ghost · icon combos</div>
         </div>
-
         <div className="doc-card">
           <div className="btn-grid">
             <div className="variant-item">
               <Button intent="primary" appearance="solid" startIcon={<Icon name="zap" size={14} />}>
                 Upgrade Now
               </Button>
-              <div className="variant-label" style={{ color: '#94a3b8' }}>
-                primary/solid
-              </div>
+              <div className="variant-label">primary/solid + icon</div>
             </div>
             <div className="variant-item">
               <Button
@@ -472,25 +505,19 @@ export const ButtonPage: React.FC = () => {
               >
                 Go Premium
               </Button>
-              <div className="variant-label" style={{ color: '#94a3b8' }}>
-                secondary/solid
-              </div>
+              <div className="variant-label">secondary/solid + icon</div>
             </div>
             <div className="variant-item">
               <Button intent="neutral" appearance="ghost">
                 Glass Effect
               </Button>
-              <div className="variant-label" style={{ color: '#94a3b8' }}>
-                neutral/ghost
-              </div>
+              <div className="variant-label">neutral/ghost</div>
             </div>
             <div className="variant-item">
-              <Button intent="info" appearance="outline">
-                Learn More
+              <Button intent="primary" appearance="link">
+                Learn more →
               </Button>
-              <div className="variant-label" style={{ color: '#94a3b8' }}>
-                info/outline
-              </div>
+              <div className="variant-label">primary/link</div>
             </div>
           </div>
         </div>
@@ -508,10 +535,10 @@ export const ButtonPage: React.FC = () => {
             {SIZES.map((s) => (
               <div className="variant-item" key={s}>
                 <Button
-                  intent={cfg.intent as ButtonIntent}
-                  appearance={cfg.appearance as ButtonAppearance}
+                  intent={cfg.intent}
+                  appearance={cfg.appearance}
                   size={s}
-                  radius={cfg.radius as ButtonRadius}
+                  radius={cfg.radius}
                 >
                   {s}
                 </Button>
@@ -533,12 +560,7 @@ export const ButtonPage: React.FC = () => {
           <div className="btn-grid">
             {RADII.map((r) => (
               <div className="variant-item" key={r}>
-                <Button
-                  intent={cfg.intent as ButtonIntent}
-                  appearance={cfg.appearance as ButtonAppearance}
-                  size={cfg.size as ButtonSize}
-                  radius={r}
-                >
+                <Button intent={cfg.intent} appearance={cfg.appearance} size={cfg.size} radius={r}>
                   Button
                 </Button>
                 <div className="variant-label">{r}</div>
@@ -589,32 +611,29 @@ export const ButtonPage: React.FC = () => {
           </div>
           <div className="sub-label">icon-only (square + pill)</div>
           <div className="btn-grid">
-            {(
-              [
-                ['primary', 'settings'],
-                ['danger', 'trash'],
-                ['success', 'check'],
-                ['neutral', 'menu'],
-                ['warning', 'bell'],
-                ['secondary', 'star'],
-              ] as const
-            ).map(([int, ico]) => (
-              <div className="btn-grid" key={`${int}-${ico}`} style={{ gap: 6 }}>
-                <Button
-                  intent={int}
-                  appearance="soft"
-                  iconOnly={<Icon name={ico} size={14} />}
-                  aria-label={ico}
-                />
-                <Button
-                  intent={int}
-                  appearance="soft"
-                  radius="full"
-                  iconOnly={<Icon name={ico} size={14} />}
-                  aria-label={ico}
-                />
-              </div>
-            ))}
+            {(['primary', 'danger', 'success', 'neutral', 'warning', 'secondary', 'info'] as const).map(
+              (int, idx) => {
+                const icons = ['settings', 'trash', 'check', 'bell', 'star', 'copy', 'close', 'github', 'zap'] as const;
+                const ico = icons[idx];
+                return (
+                  <div className="btn-grid" key={int} style={{ gap: 6 }}>
+                    <Button
+                      intent={int}
+                      appearance="soft"
+                      iconOnly={<Icon name={ico} size={14} />}
+                      aria-label={ico}
+                    />
+                    <Button
+                      intent={int}
+                      appearance="soft"
+                      radius="full"
+                      iconOnly={<Icon name={ico} size={14} />}
+                      aria-label={ico}
+                    />
+                  </div>
+                );
+              },
+            )}
           </div>
         </div>
       </div>
@@ -624,7 +643,7 @@ export const ButtonPage: React.FC = () => {
         <div className="section-header">
           <div className="section-num">6</div>
           <div className="section-title">States</div>
-          <div className="section-desc">loading · disabled · elevated</div>
+          <div className="section-desc">loading · disabled · elevated · uppercase</div>
         </div>
         <div className="doc-card">
           <div className="btn-grid">
@@ -659,10 +678,10 @@ export const ButtonPage: React.FC = () => {
               <div className="variant-label">elevated</div>
             </div>
             <div className="variant-item">
-              <Button intent="secondary" appearance="solid" loading>
-                Processing
+              <Button intent="secondary" appearance="solid" uppercase>
+                Label
               </Button>{' '}
-              <div className="variant-label">loading</div>
+              <div className="variant-label">uppercase</div>
             </div>
           </div>
         </div>

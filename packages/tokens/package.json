@@ -1,31 +1,60 @@
 {
   "name": "@vyantra/tokens",
-  "version": "0.1.1",
+  "version": "0.1.2",
+  "description": "Design tokens for VyantraUI — colors, spacing, typography",
   "type": "module",
   "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "description": "Design tokens for VyantraUI — colors, spacing, typography",
-  "license": "MIT",
   "exports": {
-    ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" },
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
     "./css": "./dist/tokens.css"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "scripts": {
-    "build": "tsc && node scripts/build-css.js",
-    "dev": "tsc --watch",
+    "build": "tsc --build && node scripts/build-css.js",
+    "dev": "tsc --build --watch",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist node_modules"
+    "clean": "rm -rf dist tsconfig.tsbuildinfo node_modules"
   },
-  "devDependencies": {
-    "typescript": "^5.4.5"
+  "license": "MIT",
+  "keywords": [
+    "vyantra",
+    "design-tokens",
+    "css-variables",
+    "theming",
+    "colors",
+    "spacing",
+    "typography",
+    "react-design-system"
+  ],
+  "author": {
+    "name": "Ashish Vora",
+    "url": "https://github.com/ashishvora1997"
   },
-  "peerDependencies": {
-    "react": "^18"
+  "publishConfig": {
+    "access": "public"
+  },
+  "bugs": {
+    "url": "https://github.com/ashishvora1997/vyantra-ui/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ashishvora1997/vyantra-ui.git"
   },
-  "homepage": "https://github.com/ashishvora1997/vyantra-ui#readme"
+  "homepage": "https://github.com/ashishvora1997/vyantra-ui#readme",
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
   }
+}

@@ -1,6 +1,7 @@
 {
   "name": "@vyantra/docs",
   "version": "0.1.0",
+  "description": "Vyantra UI — documentation app",
   "private": true,
   "type": "module",
   "scripts": {

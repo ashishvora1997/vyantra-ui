@@ -2,13 +2,15 @@
    BUTTON  —  packages/ui/src/components/Button/Button.css
    ─────────────────────────────────────────────────────────────────────────────
    100% token-based — zero hardcoded colors.
-   Themes work automatically: change tokens on [data-theme] and every
-   button variant updates with no CSS changes needed here.
+   Themes work automatically via CSS variables written by ThemeProvider.
 
    Architecture:
-   1. Intent classes (.btn--intent-*) set --btn-* local vars from semantic tokens
+   1. Intent classes (.btn--intent-*) set --btn-* local vars from --vyantra-* tokens
    2. Appearance classes (.btn--appearance-*) consume those --btn-* vars
-   → 35 combos from 7 intents × 5 appearances, defined in ~40 lines
+   3. Component-level overrides (createTheme components.Button.vars) write
+      --vyantra-btn-bg / --vyantra-btn-bg-hover etc. which are checked FIRST
+      in each appearance rule — so pseudo-selectors pick up your overrides too.
+   → 35 combos from 7 intents × 5 appearances, defined once
    ============================================================================= */
 
 @keyframes btn-spin {
@@ -16,15 +18,13 @@
     transform: rotate(360deg);
   }
 }
-
 @keyframes btn-ripple {
   from {
     transform: scale(0);
-    opacity: 0.35;
+    opacity: 0.25;
   }
-
   to {
-    transform: scale(3);
+    transform: scale(2.5);
     opacity: 0;
   }
 }
@@ -49,10 +49,10 @@
   -webkit-tap-highlight-color: transparent;
   box-sizing: border-box;
 
-  font-family: var(--font-sans);
-  font-weight: var(--weight-medium);
-  line-height: var(--leading-none);
-  letter-spacing: 0;
+  font-family: var(--vyantra-btn-font-family, var(--vyantra-font-family, system-ui));
+  font-weight: var(--vyantra-btn-font-weight, var(--vyantra-font-weight-medium, 500));
+  line-height: var(--vyantra-leading-none, 1);
+  letter-spacing: var(--vyantra-btn-letter-spacing, 0);
 
   border-width: 1px;
   border-style: solid;
@@ -61,12 +61,12 @@
   color: inherit;
 
   transition:
-    background-color var(--duration-normal) var(--ease-default),
-    border-color var(--duration-normal) var(--ease-default),
-    color var(--duration-normal) var(--ease-default),
-    box-shadow var(--duration-normal) var(--ease-default),
-    transform var(--duration-fast) var(--ease-out),
-    opacity var(--duration-normal) var(--ease-default);
+    background-color var(--vyantra-duration-normal, 150ms) var(--vyantra-ease-default, ease),
+    border-color var(--vyantra-duration-normal, 150ms) var(--vyantra-ease-default, ease),
+    color var(--vyantra-duration-normal, 150ms) var(--vyantra-ease-default, ease),
+    box-shadow var(--vyantra-duration-normal, 150ms) var(--vyantra-ease-default, ease),
+    transform var(--vyantra-duration-fast, 100ms) var(--vyantra-ease-out, ease),
+    opacity var(--vyantra-duration-normal, 150ms) var(--vyantra-ease-default, ease);
 }
 
 .btn:focus {
@@ -75,8 +75,8 @@
 .btn:focus-visible {
   outline: none;
   box-shadow:
-    0 0 0 2px var(--color-focus-ring-offset),
-    0 0 0 4px var(--btn-focus, var(--color-border-focus));
+    0 0 0 2px var(--vyantra-surface-bg, #fff),
+    0 0 0 4px var(--vyantra-btn-focus-ring, var(--vyantra-surface-border-focus, #3b82f6));
 }
 .btn:active:not(:disabled):not([aria-disabled='true']):not(.btn--loading) {
   transform: scale(0.97);
@@ -88,92 +88,92 @@
 .btn--size-2xs {
   height: 22px;
   min-width: 22px;
-  padding: 0 var(--spacing-2);
-  font-size: var(--text-xs);
-  gap: var(--spacing-1);
+  padding: 0 var(--vyantra-spacing-2, 8px);
+  font-size: var(--vyantra-font-size-xs, 0.75rem);
+  gap: var(--vyantra-spacing-1, 4px);
   --btn-icon-size: 12px;
 }
 .btn--size-xs {
   height: 26px;
   min-width: 26px;
-  padding: 0 var(--spacing-2-5);
-  font-size: var(--text-xs);
-  gap: var(--spacing-1-5);
+  padding: 0 var(--vyantra-spacing-2-5, 10px);
+  font-size: var(--vyantra-font-size-xs, 0.75rem);
+  gap: var(--vyantra-spacing-1-5, 6px);
   --btn-icon-size: 13px;
 }
 .btn--size-sm {
   height: 30px;
   min-width: 30px;
-  padding: 0 var(--spacing-3);
-  font-size: var(--text-sm);
-  gap: var(--spacing-1-5);
+  padding: 0 var(--vyantra-spacing-3, 12px);
+  font-size: var(--vyantra-font-size-sm, 0.875rem);
+  gap: var(--vyantra-spacing-1-5, 6px);
   --btn-icon-size: 14px;
 }
 .btn--size-md {
   height: 36px;
   min-width: 36px;
-  padding: 0 var(--spacing-4);
-  font-size: var(--text-sm);
-  gap: var(--spacing-2);
+  padding: 0 var(--vyantra-spacing-4, 16px);
+  font-size: var(--vyantra-font-size-sm, 0.875rem);
+  gap: var(--vyantra-spacing-2, 8px);
   --btn-icon-size: 15px;
 }
 .btn--size-lg {
   height: 42px;
   min-width: 42px;
-  padding: 0 var(--spacing-5);
-  font-size: var(--text-md);
-  gap: var(--spacing-2);
+  padding: 0 var(--vyantra-spacing-5, 20px);
+  font-size: var(--vyantra-font-size-md, 1rem);
+  gap: var(--vyantra-spacing-2, 8px);
   --btn-icon-size: 16px;
 }
 .btn--size-xl {
   height: 48px;
   min-width: 48px;
-  padding: 0 var(--spacing-6);
-  font-size: var(--text-lg);
-  gap: var(--spacing-2-5);
+  padding: 0 var(--vyantra-spacing-6, 24px);
+  font-size: var(--vyantra-font-size-lg, 1.125rem);
+  gap: var(--vyantra-spacing-2-5, 10px);
   --btn-icon-size: 18px;
-  font-weight: var(--weight-semibold);
+  font-weight: var(--vyantra-font-weight-semibold, 600);
 }
 .btn--size-2xl {
   height: 56px;
   min-width: 56px;
-  padding: 0 var(--spacing-8);
-  font-size: var(--text-xl);
-  gap: var(--spacing-3);
+  padding: 0 var(--vyantra-spacing-8, 32px);
+  font-size: var(--vyantra-font-size-xl, 1.25rem);
+  gap: var(--vyantra-spacing-3, 12px);
   --btn-icon-size: 20px;
-  font-weight: var(--weight-semibold);
+  font-weight: var(--vyantra-font-weight-semibold, 600);
 }
 
 /* =============================================================================
    RADIUS
    ============================================================================= */
 .btn--radius-none {
-  border-radius: var(--radius-none);
+  border-radius: var(--vyantra-btn-radius, var(--vyantra-radius-none, 0px));
 }
 .btn--radius-xs {
-  border-radius: var(--radius-xs);
+  border-radius: var(--vyantra-btn-radius, var(--vyantra-radius-xs, 2px));
 }
 .btn--radius-sm {
-  border-radius: var(--radius-sm);
+  border-radius: var(--vyantra-btn-radius, var(--vyantra-radius-sm, 4px));
 }
 .btn--radius-md {
-  border-radius: var(--radius-md);
+  border-radius: var(--vyantra-btn-radius, var(--vyantra-radius-md, 6px));
 }
 .btn--radius-lg {
-  border-radius: var(--radius-lg);
+  border-radius: var(--vyantra-btn-radius, var(--vyantra-radius-lg, 8px));
 }
 .btn--radius-xl {
-  border-radius: var(--radius-xl);
+  border-radius: var(--vyantra-btn-radius, var(--vyantra-radius-xl, 12px));
 }
 .btn--radius-2xl {
-  border-radius: var(--radius-2xl);
+  border-radius: var(--vyantra-btn-radius, var(--vyantra-radius-2xl, 16px));
 }
 .btn--radius-full {
-  border-radius: var(--radius-full);
+  border-radius: var(--vyantra-btn-radius, var(--vyantra-radius-full, 9999px));
 }
 
 /* =============================================================================
-   WIDTH / ICON-ONLY
+   WIDTH
    ============================================================================= */
 .btn--width-auto {
   width: auto;
@@ -185,7 +185,6 @@
   width: fit-content;
   min-width: 0;
 }
-
 .btn--icon-only {
   padding: 0 !important;
   aspect-ratio: 1/1;
@@ -260,19 +259,20 @@
 }
 
 .btn--elevated {
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--vyantra-shadow-sm);
 }
 .btn--elevated:hover:not(:disabled):not([aria-disabled='true']):not(.btn--loading) {
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--vyantra-shadow-md);
 }
 
 .btn--uppercase .btn__label {
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
+
 .btn--compact {
   min-width: 0;
-  padding: var(--spacing-1);
+  padding: var(--vyantra-spacing-1, 4px);
   height: fit-content;
 }
 
@@ -290,129 +290,133 @@
   position: absolute;
   border-radius: 50%;
   background: currentColor;
-
   transform: scale(0);
   opacity: 0.25;
-
   pointer-events: none;
-
   animation: btn-ripple 600ms ease-out forwards;
 }
 
 /* =============================================================================
-   INTENT → local CSS vars  (the only place colors are assigned)
-   Each intent maps semantic design tokens to --btn-* vars.
-   Appearances consume those vars — so appearances are defined once for all intents.
+   INTENT → local --btn-* vars
+   Each intent reads from --vyantra-color-{intent}-{role} (written by ThemeProvider).
+   Hard-coded fallbacks ensure Button works even without ThemeProvider.
+
+   Component-level override (createTheme components.Button.vars) writes
+   --vyantra-btn-bg, --vyantra-btn-bg-hover etc. These are checked FIRST
+   in appearance rules via: var(--vyantra-btn-bg, var(--btn-color))
+   So pseudo-selectors :hover :focus :active all pick up your override.
    ============================================================================= */
 
 .btn--intent-primary {
-  --btn-color: var(--color-primary);
-  --btn-hover: var(--color-primary-hover);
-  --btn-active: var(--color-primary-active);
-  --btn-subtle: var(--color-primary-subtle);
-  --btn-muted: var(--color-primary-muted);
-  --btn-border: var(--color-primary-border);
-  --btn-text: var(--color-primary-text);
-  --btn-on: var(--color-on-primary);
-  --btn-focus: var(--color-primary);
+  --btn-color: var(--vyantra-color-primary-base, var(--vyantra-color-primary-600, #2563eb));
+  --btn-hover: var(--vyantra-color-primary-hover, var(--vyantra-color-primary-700, #1d4ed8));
+  --btn-active: var(--vyantra-color-primary-active, var(--vyantra-color-primary-800, #1e40af));
+  --btn-subtle: var(--vyantra-color-primary-subtle, var(--vyantra-color-primary-50, #eff6ff));
+  --btn-muted: var(--vyantra-color-primary-muted, var(--vyantra-color-primary-100, #dbeafe));
+  --btn-border: var(--vyantra-color-primary-border, var(--vyantra-color-primary-200, #bfdbfe));
+  --btn-text: var(--vyantra-color-primary-text, var(--vyantra-color-primary-700, #1d4ed8));
+  --btn-on: var(--vyantra-color-primary-on, #ffffff);
+  --btn-focus: var(--vyantra-color-primary-base, #2563eb);
 }
 .btn--intent-secondary {
-  --btn-color: var(--color-secondary);
-  --btn-hover: var(--color-secondary-hover);
-  --btn-active: var(--color-secondary-active);
-  --btn-subtle: var(--color-secondary-subtle);
-  --btn-muted: var(--color-secondary-muted);
-  --btn-border: var(--color-secondary-border);
-  --btn-text: var(--color-secondary-text);
-  --btn-on: var(--color-on-secondary);
-  --btn-focus: var(--color-secondary);
+  --btn-color: var(--vyantra-color-secondary-base, var(--vyantra-color-secondary-600, #7c3aed));
+  --btn-hover: var(--vyantra-color-secondary-hover, var(--vyantra-color-secondary-700, #6d28d9));
+  --btn-active: var(--vyantra-color-secondary-active, var(--vyantra-color-secondary-800, #5b21b6));
+  --btn-subtle: var(--vyantra-color-secondary-subtle, var(--vyantra-color-secondary-50, #f5f3ff));
+  --btn-muted: var(--vyantra-color-secondary-muted, var(--vyantra-color-secondary-100, #ede9fe));
+  --btn-border: var(--vyantra-color-secondary-border, var(--vyantra-color-secondary-200, #ddd6fe));
+  --btn-text: var(--vyantra-color-secondary-text, var(--vyantra-color-secondary-700, #6d28d9));
+  --btn-on: var(--vyantra-color-secondary-on, #ffffff);
+  --btn-focus: var(--vyantra-color-secondary-base, #7c3aed);
 }
 .btn--intent-neutral {
-  --btn-color: var(--color-neutral);
-  --btn-hover: var(--color-neutral-hover);
-  --btn-active: var(--color-neutral-active);
-  --btn-subtle: var(--color-neutral-subtle);
-  --btn-muted: var(--color-neutral-muted);
-  --btn-border: var(--color-neutral-border);
-  --btn-text: var(--color-neutral-text);
-  --btn-on: var(--color-on-neutral);
-  --btn-focus: var(--color-border-focus);
+  --btn-color: var(--vyantra-color-neutral-base, var(--vyantra-color-neutral-700, #374151));
+  --btn-hover: var(--vyantra-color-neutral-hover, var(--vyantra-color-neutral-800, #1f2937));
+  --btn-active: var(--vyantra-color-neutral-active, var(--vyantra-color-neutral-900, #111827));
+  --btn-subtle: var(--vyantra-color-neutral-subtle, var(--vyantra-color-neutral-50, #f9fafb));
+  --btn-muted: var(--vyantra-color-neutral-muted, var(--vyantra-color-neutral-100, #f3f4f6));
+  --btn-border: var(--vyantra-color-neutral-border, var(--vyantra-color-neutral-200, #e5e7eb));
+  --btn-text: var(--vyantra-color-neutral-text, var(--vyantra-color-neutral-700, #374151));
+  --btn-on: var(--vyantra-color-neutral-on, #ffffff);
+  --btn-focus: var(--vyantra-surface-border-focus, #3b82f6);
 }
 .btn--intent-success {
-  --btn-color: var(--color-success);
-  --btn-hover: var(--color-success-hover);
-  --btn-active: var(--color-success-active);
-  --btn-subtle: var(--color-success-subtle);
-  --btn-muted: var(--color-success-muted);
-  --btn-border: var(--color-success-border);
-  --btn-text: var(--color-success-text);
-  --btn-on: var(--color-on-success);
-  --btn-focus: var(--color-success);
+  --btn-color: var(--vyantra-color-success-base, var(--vyantra-color-success-600, #16a34a));
+  --btn-hover: var(--vyantra-color-success-hover, var(--vyantra-color-success-700, #15803d));
+  --btn-active: var(--vyantra-color-success-active, var(--vyantra-color-success-800, #166534));
+  --btn-subtle: var(--vyantra-color-success-subtle, var(--vyantra-color-success-50, #f0fdf4));
+  --btn-muted: var(--vyantra-color-success-muted, var(--vyantra-color-success-100, #dcfce7));
+  --btn-border: var(--vyantra-color-success-border, var(--vyantra-color-success-200, #bbf7d0));
+  --btn-text: var(--vyantra-color-success-text, var(--vyantra-color-success-700, #15803d));
+  --btn-on: var(--vyantra-color-success-on, #ffffff);
+  --btn-focus: var(--vyantra-color-success-base, #16a34a);
 }
 .btn--intent-warning {
-  --btn-color: var(--color-warning);
-  --btn-hover: var(--color-warning-hover);
-  --btn-active: var(--color-warning-active);
-  --btn-subtle: var(--color-warning-subtle);
-  --btn-muted: var(--color-warning-muted);
-  --btn-border: var(--color-warning-border);
-  --btn-text: var(--color-warning-text);
-  --btn-on: var(--color-on-warning);
-  --btn-focus: var(--color-warning);
+  --btn-color: var(--vyantra-color-warning-base, var(--vyantra-color-warning-600, #d97706));
+  --btn-hover: var(--vyantra-color-warning-hover, var(--vyantra-color-warning-700, #b45309));
+  --btn-active: var(--vyantra-color-warning-active, var(--vyantra-color-warning-800, #92400e));
+  --btn-subtle: var(--vyantra-color-warning-subtle, var(--vyantra-color-warning-50, #fffbeb));
+  --btn-muted: var(--vyantra-color-warning-muted, var(--vyantra-color-warning-100, #fef3c7));
+  --btn-border: var(--vyantra-color-warning-border, var(--vyantra-color-warning-200, #fde68a));
+  --btn-text: var(--vyantra-color-warning-text, var(--vyantra-color-warning-700, #b45309));
+  --btn-on: var(--vyantra-color-warning-on, #ffffff);
+  --btn-focus: var(--vyantra-color-warning-base, #d97706);
 }
 .btn--intent-danger {
-  --btn-color: var(--color-danger);
-  --btn-hover: var(--color-danger-hover);
-  --btn-active: var(--color-danger-active);
-  --btn-subtle: var(--color-danger-subtle);
-  --btn-muted: var(--color-danger-muted);
-  --btn-border: var(--color-danger-border);
-  --btn-text: var(--color-danger-text);
-  --btn-on: var(--color-on-danger);
-  --btn-focus: var(--color-danger);
+  --btn-color: var(--vyantra-color-danger-base, var(--vyantra-color-danger-600, #dc2626));
+  --btn-hover: var(--vyantra-color-danger-hover, var(--vyantra-color-danger-700, #b91c1c));
+  --btn-active: var(--vyantra-color-danger-active, var(--vyantra-color-danger-800, #991b1b));
+  --btn-subtle: var(--vyantra-color-danger-subtle, var(--vyantra-color-danger-50, #fef2f2));
+  --btn-muted: var(--vyantra-color-danger-muted, var(--vyantra-color-danger-100, #fee2e2));
+  --btn-border: var(--vyantra-color-danger-border, var(--vyantra-color-danger-200, #fecaca));
+  --btn-text: var(--vyantra-color-danger-text, var(--vyantra-color-danger-700, #b91c1c));
+  --btn-on: var(--vyantra-color-danger-on, #ffffff);
+  --btn-focus: var(--vyantra-color-danger-base, #dc2626);
 }
 .btn--intent-info {
-  --btn-color: var(--color-info);
-  --btn-hover: var(--color-info-hover);
-  --btn-active: var(--color-info-active);
-  --btn-subtle: var(--color-info-subtle);
-  --btn-muted: var(--color-info-muted);
-  --btn-border: var(--color-info-border);
-  --btn-text: var(--color-info-text);
-  --btn-on: var(--color-on-info);
-  --btn-focus: var(--color-info);
+  --btn-color: var(--vyantra-color-info-base, var(--vyantra-color-info-600, #0891b2));
+  --btn-hover: var(--vyantra-color-info-hover, var(--vyantra-color-info-700, #0e7490));
+  --btn-active: var(--vyantra-color-info-active, var(--vyantra-color-info-800, #155e75));
+  --btn-subtle: var(--vyantra-color-info-subtle, var(--vyantra-color-info-50, #ecfeff));
+  --btn-muted: var(--vyantra-color-info-muted, var(--vyantra-color-info-100, #cffafe));
+  --btn-border: var(--vyantra-color-info-border, var(--vyantra-color-info-200, #a5f3fc));
+  --btn-text: var(--vyantra-color-info-text, var(--vyantra-color-info-700, #0e7490));
+  --btn-on: var(--vyantra-color-info-on, #ffffff);
+  --btn-focus: var(--vyantra-color-info-base, #0891b2);
 }
 
 /* =============================================================================
-   APPEARANCES  (defined once — works for ALL 7 intents via --btn-* vars)
+   APPEARANCES — defined once, work for all 7 intents via --btn-* vars.
+   --vyantra-btn-bg / --vyantra-btn-bg-hover are checked first — if ThemeProvider
+   wrote them via components.Button.vars(), they override the intent default.
    ============================================================================= */
 
 /* SOLID */
 .btn--appearance-solid {
-  background-color: var(--btn-color);
-  color: var(--btn-on);
-  border-color: var(--btn-color);
+  background-color: var(--vyantra-btn-bg, var(--btn-color));
+  color: var(--vyantra-btn-color, var(--btn-on));
+  border-color: var(--vyantra-btn-border-color, var(--btn-color));
 }
 .btn--appearance-solid:hover:not(:disabled):not(.btn--loading) {
-  background-color: var(--btn-hover);
-  border-color: var(--btn-hover);
+  background-color: var(--vyantra-btn-bg-hover, var(--btn-hover));
+  border-color: var(--vyantra-btn-bg-hover, var(--btn-hover));
 }
 .btn--appearance-solid:active:not(:disabled):not(.btn--loading),
 .btn--appearance-solid.btn--active {
-  background-color: var(--btn-active);
-  border-color: var(--btn-active);
+  background-color: var(--vyantra-btn-bg-active, var(--btn-active));
+  border-color: var(--vyantra-btn-bg-active, var(--btn-active));
 }
 
 /* OUTLINE */
 .btn--appearance-outline {
   background-color: transparent;
-  color: var(--btn-text);
-  border-color: var(--btn-color);
+  color: var(--vyantra-btn-color, var(--btn-text));
+  border-color: var(--vyantra-btn-border-color, var(--btn-color));
 }
 .btn--appearance-outline:hover:not(:disabled):not(.btn--loading) {
   background-color: var(--btn-subtle);
-  border-color: var(--btn-hover);
-  color: var(--btn-hover);
+  border-color: var(--vyantra-btn-bg-hover, var(--btn-hover));
+  color: var(--vyantra-btn-bg-hover, var(--btn-hover));
 }
 .btn--appearance-outline:active:not(:disabled):not(.btn--loading),
 .btn--appearance-outline.btn--active {
@@ -422,12 +426,12 @@
 /* GHOST */
 .btn--appearance-ghost {
   background-color: transparent;
-  color: var(--btn-text);
+  color: var(--vyantra-btn-color, var(--btn-text));
   border-color: transparent;
 }
 .btn--appearance-ghost:hover:not(:disabled):not(.btn--loading) {
   background-color: var(--btn-subtle);
-  color: var(--btn-hover);
+  color: var(--vyantra-btn-bg-hover, var(--btn-hover));
 }
 .btn--appearance-ghost:active:not(:disabled):not(.btn--loading),
 .btn--appearance-ghost.btn--active {
@@ -437,12 +441,12 @@
 /* SOFT */
 .btn--appearance-soft {
   background-color: var(--btn-subtle);
-  color: var(--btn-text);
+  color: var(--vyantra-btn-color, var(--btn-text));
   border-color: transparent;
 }
 .btn--appearance-soft:hover:not(:disabled):not(.btn--loading) {
   background-color: var(--btn-muted);
-  color: var(--btn-hover);
+  color: var(--vyantra-btn-bg-hover, var(--btn-hover));
 }
 .btn--appearance-soft:active:not(:disabled):not(.btn--loading),
 .btn--appearance-soft.btn--active {
@@ -452,7 +456,7 @@
 /* LINK */
 .btn--appearance-link {
   background-color: transparent;
-  color: var(--btn-text);
+  color: var(--vyantra-btn-color, var(--btn-text));
   border-color: transparent;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -462,6 +466,6 @@
   min-width: 0;
 }
 .btn--appearance-link:hover:not(:disabled):not(.btn--loading) {
-  color: var(--btn-hover);
+  color: var(--vyantra-btn-bg-hover, var(--btn-hover));
   text-decoration-thickness: 2px;
 }
