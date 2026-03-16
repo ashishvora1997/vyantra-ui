@@ -47,6 +47,7 @@ const navItems = [
     items: [
       { id: 'overview', label: 'Overview' },
       { id: 'tokens',   label: 'Design Tokens' },
+      { id: 'theming',  label: 'Theming' },
     ],
   },
   {

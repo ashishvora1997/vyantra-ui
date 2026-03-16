@@ -1,0 +1,26 @@
+/* =============================================================================
+   @vyantra/ui/styles
+   ─────────────────────────────────────────────────────────────────────────────
+   Single import that loads everything needed to use @vyantra/ui:
+   1. Design tokens  — all --vyantra-* CSS variables (light + dark themes)
+   2. Component CSS  — Button and all future components
+
+   Import once at your app root:
+     import '@vyantra/ui/styles';
+
+   You do NOT need to separately import @vyantra/tokens/css when using this.
+   ============================================================================= */
+
+/* ── 1. Design tokens ────────────────────────────────────────────────────────
+   Imports the full tokens.css from @vyantra/tokens.
+   All --vyantra-* variables are defined here for both light and dark themes.
+   The path resolves at build time via the Vite alias / tsc build pipeline. */
+@import '@vyantra/tokens/css';
+
+/* ── 2. Component styles ──────────────────────────────────────────────────── */
+@import '../components/Button/Button.css';
+
+/* Future components will be added here:
+@import '../components/Input/Input.css';
+@import '../components/Badge/Badge.css';
+*/

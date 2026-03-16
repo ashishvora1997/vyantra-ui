@@ -1,1 +1,2 @@
-console.log('Hello from tokens package!');
+export * from './createTheme';
+export * from './theme.types';

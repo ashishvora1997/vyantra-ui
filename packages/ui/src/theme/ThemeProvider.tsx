@@ -1,127 +1,163 @@
+// =============================================================================
+//  VYANTRA — ThemeProvider.tsx
+//  Writes all CSS vars to DOM, manages scheme, provides context.
+// =============================================================================
+
 import React, {
-  createContext,
+  useCallback,
   useContext,
   useEffect,
-  useState,
-  useCallback,
+  useLayoutEffect,
   useMemo,
+  useRef,
+  useState,
 } from 'react';
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Types
-// ─────────────────────────────────────────────────────────────────────────────
+import type { ResolvedVyantraTheme } from '@vyantra/tokens';
+import type { VyantraThemeConfig }   from '@vyantra/tokens';
+import { createTheme, resolveTheme } from '@vyantra/tokens';
 
-export type Theme        = 'light' | 'dark';
-export type ThemeMode    = 'light' | 'dark' | 'system';
+// VyantraContextValue is defined in context.ts — import from there
+import { VyantraContext, type VyantraContextValue } from './context';
+import { themeToCSSVars, resolveComponentVars }      from './themeToCSSVars';
 
-export interface ThemeContextValue {
-  /** The resolved theme currently applied to the DOM ('light' | 'dark') */
-  theme: Theme;
-  /** The user's selected preference ('light' | 'dark' | 'system') */
-  mode: ThemeMode;
-  /** Set preference */
-  setMode: (mode: ThemeMode) => void;
-  /** Quick toggle between light and dark */
-  toggle: () => void;
-  isDark: boolean;
-}
+// Re-export so consumers can import from either place
+export type { VyantraContextValue } from './context';
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Context
-// ─────────────────────────────────────────────────────────────────────────────
-
-const ThemeContext = createContext<ThemeContextValue | null>(null);
-
-const STORAGE_KEY = 'vyantra-theme';
-
-function getSystemTheme(): Theme {
-  if (typeof window === 'undefined') return 'light';
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
-
-function resolveTheme(mode: ThemeMode): Theme {
-  if (mode === 'system') return getSystemTheme();
-  return mode;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Provider
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface ThemeProviderProps {
   children: React.ReactNode;
   /**
-   * Default mode on first load.
-   * @default 'system'
+   * Pass the result of createTheme() here.
+   * Omitting uses Vyantra's built-in defaults.
    */
-  defaultMode?: ThemeMode;
-  /**
-   * Element that receives the data-theme attribute.
-   * @default document.documentElement
-   */
-  attribute?: string;
+  theme?: VyantraThemeConfig;
 }
 
-export function ThemeProvider({
-  children,
-  defaultMode = 'system',
-  attribute   = 'data-theme',
-}: ThemeProviderProps) {
-  // Read stored preference or use default
-  const [mode, setModeState] = useState<ThemeMode>(() => {
-    if (typeof window === 'undefined') return defaultMode;
-    return (localStorage.getItem(STORAGE_KEY) as ThemeMode | null) ?? defaultMode;
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const STORAGE_KEY = 'vyantra-scheme';
+
+function getOSScheme(): 'light' | 'dark' {
+  if (typeof window === 'undefined') return 'light';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function resolveScheme(pref: 'light' | 'dark' | 'system'): 'light' | 'dark' {
+  return pref === 'system' ? getOSScheme() : pref;
+}
+
+// ─── ThemeProvider ────────────────────────────────────────────────────────────
+
+export function ThemeProvider({ children, theme: themeProp }: ThemeProviderProps) {
+  const config = useMemo(() => themeProp ?? createTheme(), [themeProp]);
+
+  const [schemePref, setSchemePref] = useState<'light' | 'dark' | 'system'>(() => {
+    if (typeof window === 'undefined') return config.scheme;
+    return (
+      (localStorage.getItem(STORAGE_KEY) as 'light' | 'dark' | 'system' | null)
+      ?? config.scheme
+    );
   });
 
-  const [theme, setTheme] = useState<Theme>(() => resolveTheme(mode));
-
-  // Apply theme to <html> and persist
-  const applyTheme = useCallback((m: ThemeMode) => {
-    const resolved = resolveTheme(m);
-    setTheme(resolved);
-    document.documentElement.setAttribute(attribute, resolved);
-    localStorage.setItem(STORAGE_KEY, m);
-  }, [attribute]);
-
-  // On mount — apply immediately and listen for system changes
-  useEffect(() => {
-    applyTheme(mode);
-
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleSystemChange = () => {
-      if (mode === 'system') applyTheme('system');
-    };
-    mq.addEventListener('change', handleSystemChange);
-    return () => mq.removeEventListener('change', handleSystemChange);
-  }, [mode, applyTheme]);
-
-  const setMode = useCallback((m: ThemeMode) => {
-    setModeState(m);
-    applyTheme(m);
-  }, [applyTheme]);
-
-  const toggle = useCallback(() => {
-    setMode(theme === 'dark' ? 'light' : 'dark');
-  }, [theme, setMode]);
-
-  const value = useMemo<ThemeContextValue>(
-    () => ({ theme, mode, setMode, toggle, isDark: theme === 'dark' }),
-    [theme, mode, setMode, toggle],
+  const [scheme, setSchemeResolved] = useState<'light' | 'dark'>(() =>
+    resolveScheme(schemePref),
   );
 
+  const resolvedTheme = useMemo<ResolvedVyantraTheme>(
+    () => resolveTheme(config, scheme),
+    [config, scheme],
+  );
+
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  // Write CSS vars before paint — prevents FOUC
+  useLayoutEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+
+    const tokenVars = themeToCSSVars(resolvedTheme);
+    for (const [k, v] of Object.entries(tokenVars)) {
+      el.style.setProperty(k, v);
+    }
+
+    const componentVars = resolveComponentVars(resolvedTheme, scheme);
+    for (const [k, v] of Object.entries(componentVars)) {
+      el.style.setProperty(k, v);
+    }
+
+    el.setAttribute('data-theme', scheme);
+  }, [resolvedTheme, scheme]);
+
+  // Follow OS when preference is 'system'
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = () => {
+      if (schemePref === 'system') setSchemeResolved(getOSScheme());
+    };
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, [schemePref]);
+
+  const setScheme = useCallback((pref: 'light' | 'dark' | 'system') => {
+    setSchemePref(pref);
+    setSchemeResolved(resolveScheme(pref));
+    localStorage.setItem(STORAGE_KEY, pref);
+  }, []);
+
+  const toggleScheme = useCallback(() => {
+    setScheme(scheme === 'dark' ? 'light' : 'dark');
+  }, [scheme, setScheme]);
+
+  const value = useMemo<VyantraContextValue>(() => ({
+    theme:            resolvedTheme,
+    scheme,
+    schemePreference: schemePref,
+    setScheme,
+    toggleScheme,
+    isSystem:         schemePref === 'system',
+  }), [resolvedTheme, scheme, schemePref, setScheme, toggleScheme]);
+
   return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
+    <VyantraContext.Provider value={value}>
+      {/* display:contents — wrapper doesn't affect layout, CSS vars are inherited */}
+      <div ref={rootRef} style={{ display: 'contents' }}>
+        {children}
+      </div>
+    </VyantraContext.Provider>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Hook
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Hooks ────────────────────────────────────────────────────────────────────
 
-export function useTheme(): ThemeContextValue {
-  const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error('useTheme must be used inside <ThemeProvider>');
+/**
+ * Access the full Vyantra context — theme, scheme, controls.
+ * Must be used inside <ThemeProvider>.
+ */
+export function useVyantra(): VyantraContextValue {
+  const ctx = useContext(VyantraContext);
+  if (!ctx) throw new Error('[Vyantra] useVyantra must be used inside <ThemeProvider>');
   return ctx;
+}
+
+/**
+ * Access just the resolved theme object.
+ * @example
+ * const token = useTheme();
+ * token.colors.primary[600]   // '#e11d48'
+ * token.surface.background    // resolved for current scheme
+ */
+export function useTheme(): ResolvedVyantraTheme {
+  return useVyantra().theme;
+}
+
+/**
+ * Access and control the color scheme.
+ * @example
+ * const { scheme, toggleScheme, setScheme, isSystem } = useScheme();
+ */
+export function useScheme() {
+  const { scheme, schemePreference, setScheme, toggleScheme, isSystem } = useVyantra();
+  return { scheme, schemePreference, setScheme, toggleScheme, isSystem };
 }

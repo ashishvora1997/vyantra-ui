@@ -5,6 +5,7 @@ import { Sidebar } from './components/Sidebar';
 import { SearchModal } from './components/SearchModal';
 import { ButtonPage } from './pages/button/ButtonPage';
 import './styles/globals.css';
+import { ThemingPage } from './pages/theme/ThemingPage';
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 const SunIcon = () => (
@@ -157,6 +158,7 @@ function AppInner() {
         {page === 'overview' && <OverviewPage />}
         {page === 'tokens'   && <TokensPage />}
         {page === 'button'   && <ButtonPage />}
+        {page === 'theming'  && <ThemingPage />}
       </main>
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} onNavigate={handleNavigate} />
     </div>

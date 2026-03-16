@@ -12,4 +12,6 @@ export type {
   ButtonWidth,
   ButtonSpinnerPlacement,
   PolymorphicButtonProps,
+  ButtonIconPosition,
+  ButtonSlot,
 } from './Button.types';

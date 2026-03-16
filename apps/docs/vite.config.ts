@@ -33,14 +33,20 @@ export default defineConfig({
         find: '@vyantra/ui/theme',
         replacement: r('../../packages/ui/src/theme/index.ts'),
       },
- 
-      // 2. @vyantra/ui  →  packages/ui/src/index.ts
+
+      // 2. @vyantra/ui/styles  →  packages/ui/src/styles/index.css
+      { find: '@vyantra/ui/styles', replacement: r('../../packages/ui/src/styles/index.css') },
+
+      // 3. @vyantra/ui  →  packages/ui/src/index.ts
       {
         find: '@vyantra/ui',
         replacement: r('../../packages/ui/src/index.ts'),
       },
- 
-      // 3. @vyantra/tokens  →  packages/tokens/src/index.ts  (JS only)
+
+      // 4. @vyantra/tokens/css  →  packages/tokens/src/tokens.css
+      { find: '@vyantra/tokens/css', replacement: r('../../packages/tokens/src/tokens.css') },
+
+      // 5. @vyantra/tokens  →  packages/tokens/src/index.ts  (JS only)
       {
         find: '@vyantra/tokens',
         replacement: r('../../packages/tokens/src/index.ts'),

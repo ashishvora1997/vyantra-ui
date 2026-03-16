@@ -1,22 +1,20 @@
-import React, {
-  forwardRef,
-  Children,
-  cloneElement,
-  isValidElement,
-  useCallback,
-  useRef,
-} from 'react';
+// =============================================================================
+//  VYANTRA — Button.tsx
+//  Reads theme.components.Button.defaultProps + classNames from context.
+//  Component-level CSS vars (vars()) are already written on the DOM by ThemeProvider.
+//  Slots: root | label | icon | spinner
+// =============================================================================
+
+import React, { forwardRef, useCallback, useContext, useRef } from 'react';
 import type { ButtonProps } from './Button.types';
+import { VyantraContext } from '../../theme/context';
+import { cx, createRipple, Slot } from '../../utils';
 import './Button.css';
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  DEFAULT SPINNER
-//  A simple SVG arc spinner — can be replaced via the `spinner` prop.
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Spinner ──────────────────────────────────────────────────────────────────
 
 const DefaultSpinner: React.FC = () => (
   <svg
-    xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -24,17 +22,12 @@ const DefaultSpinner: React.FC = () => (
     strokeLinecap="round"
     aria-hidden="true"
   >
-    {/* Static track */}
     <circle cx="12" cy="12" r="9" opacity={0.25} />
-    {/* Spinning arc */}
     <path d="M12 3 a9 9 0 0 1 9 9" />
   </svg>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  CLASS NAME BUILDER
-//  Pure function — easier to test, keeps JSX clean.
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Class builder ────────────────────────────────────────────────────────────
 
 interface ClassConfig {
   intent: ButtonProps['intent'];
@@ -51,28 +44,17 @@ interface ClassConfig {
   uppercase: boolean;
   iconOnly: boolean;
   className?: string;
+  slotClass?: string; // from theme classNames.root
 }
 
 function buildClassName(cfg: ClassConfig): string {
-  return [
+  return cx(
     'btn',
-
-    // Intent
     `btn--intent-${cfg.intent ?? 'primary'}`,
-
-    // Appearance
     `btn--appearance-${cfg.appearance ?? 'solid'}`,
-
-    // Size
     `btn--size-${cfg.size ?? 'md'}`,
-
-    // Radius
     `btn--radius-${cfg.radius ?? 'md'}`,
-
-    // Width
     `btn--width-${cfg.width ?? 'auto'}`,
-
-    // Boolean modifiers
     cfg.loading && 'btn--loading',
     cfg.active && 'btn--active',
     cfg.selected && 'btn--selected',
@@ -80,228 +62,76 @@ function buildClassName(cfg: ClassConfig): string {
     cfg.compact && 'btn--compact',
     cfg.uppercase && 'btn--uppercase',
     cfg.iconOnly && 'btn--icon-only',
-
-    // Consumer className last (highest specificity wins)
     cfg.className,
-  ]
-    .filter(Boolean)
-    .join(' ');
+    cfg.slotClass,
+  );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  RIPPLE
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Button ───────────────────────────────────────────────────────────────────
 
-// function createRipple(
-//   event: React.MouseEvent<HTMLElement>,
-//   element: HTMLElement,
-// ): void {
-//   const rect   = element.getBoundingClientRect();
-//   const ripple = document.createElement('span');
-//   ripple.className = 'btn__ripple';
-//   ripple.style.left = `${event.clientX - rect.left}px`;
-//   ripple.style.top  = `${event.clientY - rect.top}px`;
-//   element.appendChild(ripple);
-//   ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
-// }
-
-function createRipple(event: React.MouseEvent<HTMLElement>, element: HTMLElement): void {
-  const rect = element.getBoundingClientRect();
-
-  const ripple = document.createElement('span');
-  ripple.className = 'btn__ripple';
-
-  const size = Math.max(rect.width, rect.height);
-
-  const x = event.clientX - rect.left - size / 2;
-  const y = event.clientY - rect.top - size / 2;
-
-  ripple.style.width = `${size}px`;
-  ripple.style.height = `${size}px`;
-
-  ripple.style.left = `${x}px`;
-  ripple.style.top = `${y}px`;
-
-  element.appendChild(ripple);
-
-  ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  SLOT HELPER  (asChild pattern)
-//  Merges our computed className + aria attributes onto the child element.
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface SlotProps {
-  children: React.ReactNode;
-  className: string;
-  disabled?: boolean;
-  // Match React's Booleanish — boolean | "true" | "false"
-  'aria-disabled'?: boolean | 'true' | 'false';
-  'aria-busy'?: boolean | 'true' | 'false';
-  onClick?: React.MouseEventHandler;
-  // ref lives here so we avoid forwardRef wrapper type conflicts
-  ref?: React.Ref<HTMLElement>;
-  [key: string]: unknown;
-}
-
-/**
- * Plain function — no forwardRef wrapper needed.
- * Merges button className + all props onto the single child element.
- * ref is forwarded through cloneElement directly.
- */
-function Slot({ children, ref, ...props }: SlotProps): React.ReactElement | null {
-  const child = Children.only(children);
-
-  if (!isValidElement(child)) {
-    console.warn('[Button] asChild requires exactly one valid React child element.');
-    return null;
-  }
-
-  const childProps = child.props as Record<string, unknown>;
-
-  // Merge classNames — child wins on conflicts for specificity
-  const mergedClassName = [props.className, childProps.className].filter(Boolean).join(' ');
-
-  return cloneElement(child as React.ReactElement<Record<string, unknown>>, {
-    ...props,
-    ...childProps,
-    ...(ref != null ? { ref } : {}),
-    className: mergedClassName,
-  });
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  BUTTON COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * ## Button
- *
- * The foundational interactive element of the design system.
- *
- * ### Variants
- * - **intent** × **appearance** → 35 color combinations
- * - **size** → 7 height presets
- * - **radius** → 8 shape presets
- *
- * ### Icons
- * ```tsx
- * <Button startIcon={<SearchIcon />}>Search</Button>
- * <Button endIcon={<ArrowIcon />}>Next</Button>
- * <Button iconOnly={<SettingsIcon />} aria-label="Settings" />
- * ```
- *
- * ### Slots
- * ```tsx
- * <Button slotStart={<Avatar size="xs" />}>Profile</Button>
- * <Button slotEnd={<Kbd>⌘K</Kbd>}>Command</Button>
- * ```
- *
- * ### Loading
- * ```tsx
- * <Button loading loadingText="Saving…">Save</Button>
- * <Button loading spinner={<MySpinner />}>Save</Button>
- * ```
- *
- * ### asChild (router links, custom elements)
- * ```tsx
- * <Button asChild>
- *   <Link to="/dashboard">Dashboard</Link>
- * </Button>
- *
- * <Button asChild intent="danger">
- *   <NextLink href="/delete">Delete</NextLink>
- * </Button>
- * ```
- *
- * ### Anchor
- * ```tsx
- * <Button href="https://example.com" target="_blank">Open</Button>
- * ```
- *
- * ### Polymorphic
- * ```tsx
- * <Button as={RouterLink} to="/home">Home</Button>
- * ```
- */
 export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement | HTMLElement, ButtonProps>(
-  (props, ref) => {
-    const {
-      // Content
-      children,
+  (ownProps, ref) => {
+    // ── Merge theme defaultProps (instance props always win) ──
+    const ctx = useContext(VyantraContext);
+    const themeDefaults = ctx?.theme.components.Button?.defaultProps ?? {};
+    const themeClassNames = ctx?.theme.components.Button?.classNames ?? {};
 
-      // Appearance
+    const props: ButtonProps = { ...themeDefaults, ...ownProps };
+
+    const {
+      children,
       intent = 'primary',
       appearance = 'solid',
       size = 'md',
       radius = 'md',
       width = 'auto',
-
-      // Icons
       startIcon,
       endIcon,
       iconOnly,
-
-      // Slots
       slotStart,
       slotEnd,
-
-      // Loading
       loading = false,
       loadingText,
       spinnerPlacement = 'start',
       spinner,
-
-      // State
       disabled = false,
       active = false,
       selected = false,
-
-      // Modifiers
       compact = false,
       elevated = false,
       uppercase = false,
-
-      // Patterns
       asChild = false,
-
-      // HTML
       type = 'button',
       href,
       target,
       rel,
-
-      // Polymorphic
       as: Component,
-
-      // Events
       onClick,
-
-      // Rest — `as` is already consumed above, won't appear here
       className,
+      classNames: ownClassNames = {},
       ...rest
     } = props;
-    const internalRef = useRef<HTMLElement | null>(null);
-    // ── Internal ref for ripple ──────────────────────────────────────────────
-    const isDisabled = disabled || loading;
 
-    // ── Click handler with ripple ────────────────────────────────────────────
+    // Merge theme-level classNames with per-instance classNames (instance wins)
+    const classNames = { ...themeClassNames, ...ownClassNames };
+
+    const isDisabled = disabled || loading;
+    const internalRef = useRef<HTMLElement | null>(null);
+
+    // ── Ripple click handler ──
     const handleClick = useCallback(
       (event: React.MouseEvent<HTMLElement>) => {
         if (isDisabled) {
           event.preventDefault();
           return;
         }
-        const el = internalRef.current;
-        // const el = (ref as React.RefObject<HTMLElement>)?.current;
-        if (el) createRipple(event, el);
+        if (internalRef.current) createRipple(event, internalRef.current);
         onClick?.(event as React.MouseEvent<HTMLButtonElement>);
       },
       [isDisabled, onClick],
     );
 
-    // ── Class name ────────────────────────────────────────────────────────────
+    // ── Computed root class ──
     const computedClass = buildClassName({
       intent,
       appearance,
@@ -317,62 +147,70 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement | HTMLEle
       uppercase,
       iconOnly: !!iconOnly,
       className,
+      slotClass: classNames.root,
     });
 
-    // ── Spinner node ──────────────────────────────────────────────────────────
+    // ── data-* attributes for CSS Module selectors ──
+    const dataAttrs = {
+      'data-intent': intent,
+      'data-appearance': appearance,
+      'data-size': size,
+      'data-loading': loading || undefined,
+      'data-disabled': isDisabled || undefined,
+      'data-active': active || undefined,
+      'data-selected': selected || undefined,
+      'data-elevated': elevated || undefined,
+    };
+
+    // ── Shared ref handler ──
+    const setRef = (node: HTMLElement | null) => {
+      internalRef.current = node;
+      if (typeof ref === 'function') ref(node);
+      else if (ref) (ref as React.MutableRefObject<HTMLElement | null>).current = node;
+    };
+
+    // ── Spinner node ──
     const spinnerNode = (
-      <span className="btn__spinner" aria-hidden="true">
+      <span className={cx('btn__spinner', classNames.spinner)} aria-hidden="true">
         {spinner ?? <DefaultSpinner />}
       </span>
     );
 
-    // ── Render helpers ────────────────────────────────────────────────────────
-
+    // ── Icon helper ──
     const renderIcon = (icon: React.ReactNode) => (
-      <span className="btn__icon" aria-hidden="true">
+      <span className={cx('btn__icon', classNames.icon)} aria-hidden="true">
         {icon}
       </span>
     );
 
-    // ── Content assembly ──────────────────────────────────────────────────────
+    // ── Content ──
     let content: React.ReactNode;
 
     if (iconOnly) {
-      // Icon-only — show spinner if loading, otherwise the icon
       content = loading ? spinnerNode : renderIcon(iconOnly);
     } else {
-      // Determine start slot content
-      const startContent =
+      const startSlot =
         loading && spinnerPlacement === 'start'
           ? spinnerNode
           : startIcon
             ? renderIcon(startIcon)
             : null;
 
-      // Determine end slot content
-      const endContent =
+      const endSlot =
         loading && spinnerPlacement === 'end' ? spinnerNode : endIcon ? renderIcon(endIcon) : null;
 
-      // Label — show loadingText if provided and loading
       const label = loading && loadingText ? loadingText : children;
 
       content = (
         <>
-          {/* slotStart — before startIcon */}
           {slotStart && (
             <span className="btn__slot-start" aria-hidden="true">
               {slotStart}
             </span>
           )}
-
-          {startContent}
-
-          {/* Label */}
-          {label != null && <span className="btn__label">{label}</span>}
-
-          {endContent}
-
-          {/* slotEnd — after endIcon */}
+          {startSlot}
+          {label != null && <span className={cx('btn__label', classNames.label)}>{label}</span>}
+          {endSlot}
           {slotEnd && (
             <span className="btn__slot-end" aria-hidden="true">
               {slotEnd}
@@ -382,48 +220,32 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement | HTMLEle
       );
     }
 
-    // ── Shared props ──────────────────────────────────────────────────────────
+    // ── Shared props ──
     const sharedProps = {
       className: computedClass,
       'aria-disabled': isDisabled || undefined,
       'aria-busy': loading || undefined,
       onClick: handleClick,
+      ...dataAttrs,
       ...rest,
     };
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  1. asChild — merge onto child element
-    // ─────────────────────────────────────────────────────────────────────────
+    // ── 1. asChild ──
     if (asChild) {
       return (
-        <Slot
-          {...sharedProps}
-          disabled={isDisabled}
-          ref={(node) => {
-            internalRef.current = node;
-            if (typeof ref === 'function') ref(node);
-            else if (ref) (ref as React.MutableRefObject<any>).current = node;
-          }}
-        >
+        <Slot {...sharedProps} disabled={isDisabled} ref={setRef}>
           {children}
         </Slot>
       );
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  2. href — render as <a> anchor
-    // ─────────────────────────────────────────────────────────────────────────
+    // ── 2. href → <a> ──
     if (href) {
       const anchorRel =
         target === '_blank' ? ['noreferrer', 'noopener', rel].filter(Boolean).join(' ') : rel;
-
       return (
         <a
-          ref={(node) => {
-            internalRef.current = node;
-            if (typeof ref === 'function') ref(node);
-            else if (ref) (ref as React.MutableRefObject<any>).current = node;
-          }}
+          ref={setRef as React.Ref<HTMLAnchorElement>}
           href={isDisabled ? undefined : href}
           target={target}
           rel={anchorRel}
@@ -436,36 +258,19 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement | HTMLEle
       );
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  3. as — polymorphic custom component
-    // ─────────────────────────────────────────────────────────────────────────
+    // ── 3. as → polymorphic ──
     if (Component) {
       return (
-        <Component
-          ref={(node: any) => {
-            internalRef.current = node;
-            if (typeof ref === 'function') ref(node);
-            else if (ref) (ref as React.MutableRefObject<any>).current = node;
-          }}
-          {...sharedProps}
-          disabled={isDisabled}
-        >
+        <Component ref={setRef} {...sharedProps} disabled={isDisabled}>
           {content}
         </Component>
       );
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  4. Default — <button>
-    // ─────────────────────────────────────────────────────────────────────────
+    // ── 4. Default → <button> ──
     return (
       <button
-        // ref={ref as React.Ref<HTMLButtonElement>}
-        ref={(node) => {
-          internalRef.current = node;
-          if (typeof ref === 'function') ref(node);
-          else if (ref) (ref as React.MutableRefObject<any>).current = node;
-        }}
+        ref={setRef as React.Ref<HTMLButtonElement>}
         type={type}
         disabled={isDisabled}
         {...sharedProps}
@@ -477,5 +282,4 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement | HTMLEle
 );
 
 Button.displayName = 'Button';
-
 export default Button;

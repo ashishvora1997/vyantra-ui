@@ -6,7 +6,24 @@
     "moduleResolution": "Node",
     "target": "ESNext",
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    "paths": {
+      "@vyantra/ui": [
+        "../../packages/ui/src/index.ts"
+      ],
+      "@vyantra/ui/theme": [
+        "../../packages/ui/src/theme/index.ts"
+      ],
+      "@vyantra/ui/styles": [
+        "../../packages/ui/src/styles/index.css"
+      ],
+      "@vyantra/tokens": [
+        "../../packages/tokens/src/index.ts"
+      ],
+      "@vyantra/tokens/css": [
+        "../../packages/tokens/src/tokens.css"
+      ]
+    }
   },
   "include": ["src"]
 }
