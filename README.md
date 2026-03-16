@@ -1,3 +1,17 @@
+</div>
+
+> ⚠️ **Project Status: Early Development**
+>
+> Vyantra is currently under active development.
+> At the moment, only the **Button** component is available.
+>
+> The API and components may change as the library evolves,
+> so we **do not recommend using it in production yet**.
+>
+> More components and features are coming soon 🚀
+
+---
+
 <div align="center">
 
 # Vyantra Design System
