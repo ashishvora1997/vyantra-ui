@@ -117,6 +117,8 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement | HTMLEle
 
     const isDisabled = disabled || loading;
     const internalRef = useRef<HTMLElement | null>(null);
+    // ── Ripple click handler ── (change target to clip ref)
+    const clipRef = useRef<HTMLSpanElement | null>(null);
 
     // ── Ripple click handler ──
     const handleClick = useCallback(
@@ -125,7 +127,8 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement | HTMLEle
           event.preventDefault();
           return;
         }
-        if (internalRef.current) createRipple(event, internalRef.current);
+        const rippleTarget = appearance === 'decorated' ? clipRef.current : internalRef.current;
+        if (rippleTarget) createRipple(event, rippleTarget);
         onClick?.(event as React.MouseEvent<HTMLButtonElement>);
       },
       [isDisabled, onClick],
@@ -230,6 +233,15 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement | HTMLEle
       ...rest,
     };
 
+    const wrappedContent =
+      appearance === 'decorated' ? (
+        <span className="btn__clip" ref={clipRef}>
+          {content}
+        </span>
+      ) : (
+        content
+      );
+
     // ── 1. asChild ──
     if (asChild) {
       return (
@@ -253,7 +265,7 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement | HTMLEle
           tabIndex={isDisabled ? -1 : undefined}
           {...sharedProps}
         >
-          {content}
+          {wrappedContent}
         </a>
       );
     }
@@ -262,7 +274,7 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement | HTMLEle
     if (Component) {
       return (
         <Component ref={setRef} {...sharedProps} disabled={isDisabled}>
-          {content}
+          {wrappedContent}
         </Component>
       );
     }
@@ -275,7 +287,7 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement | HTMLEle
         disabled={isDisabled}
         {...sharedProps}
       >
-        {content}
+        {wrappedContent}
       </button>
     );
   },
