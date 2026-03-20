@@ -50,10 +50,6 @@ importers:
         version: 5.4.21(@types/node@25.4.0)
 
   packages/tokens:
-    dependencies:
-      react:
-        specifier: ^18
-        version: 18.3.1
     devDependencies:
       typescript:
         specifier: ^5.4.5
@@ -62,8 +58,8 @@ importers:
   packages/ui:
     dependencies:
       '@vyantra/tokens':
-        specifier: workspace:*
-        version: link:../tokens
+        specifier: ^0.1.2
+        version: 0.1.2
     devDependencies:
       '@testing-library/jest-dom':
         specifier: ^6.4.2
@@ -700,6 +696,10 @@ packages:
 
   '@vue/shared@3.5.30':
     resolution: {integrity: sha512-YXgQ7JjaO18NeK2K9VTbDHaFy62WrObMa6XERNfNOkAhD1F1oDSf3ZJ7K6GqabZ0BvSDHajp8qfS5Sa2I9n8uQ==}
+
+  '@vyantra/tokens@0.1.2':
+    resolution: {integrity: sha512-v5T0Qs5DmwHYCxQ0zS61JDkptaUdW4J/jD6eLY/yA4dT7eO3ikSbvoKEDhdx0P9B+2+va33CqlGzDEgiXQ1fdg==}
+    engines: {node: '>=18'}
 
   acorn-walk@8.3.5:
     resolution: {integrity: sha512-HEHNfbars9v4pgpW6SO1KSPkfoS0xVOM/9UzkJltjlsHZmJasxg8aXkuZa7SMf8vKGIBhpUsPluQSqhJFCqebw==}
@@ -2327,6 +2327,8 @@ snapshots:
       typescript: 5.9.3
 
   '@vue/shared@3.5.30': {}
+
+  '@vyantra/tokens@0.1.2': {}
 
   acorn-walk@8.3.5:
     dependencies:
