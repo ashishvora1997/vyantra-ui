@@ -49,10 +49,37 @@
   -webkit-tap-highlight-color: transparent;
   box-sizing: border-box;
 
-  font-family: var(--vyantra-btn-font-family, var(--vyantra-font-family, system-ui));
-  font-weight: var(--vyantra-btn-font-weight, var(--vyantra-font-weight-medium, 500));
+  /* ── Component-level override vars ────────────────────────────────────────
+   * These vars are the bridge between createTheme(components.Button.vars())
+   * and the CSS. ThemeProvider writes them onto the DOM when the user
+   * provides overrides. Default values are declared here so they always
+   * resolve to something sensible even without a ThemeProvider.
+   *
+   * RULE: Only declare vars that have a real default value here.
+   * Color vars (--vyantra-btn-bg, --vyantra-btn-bg-hover, etc.) are NOT
+   * declared here — leaving them truly unset means the fallback inside
+   * each var() call correctly kicks in. Declaring them as 'initial' would
+   * make them resolve to an empty value, breaking the fallback chain.
+   * ----------------------------------------------------------------------- */
+
+  /* Typography — declared with real defaults */
+  --vyantra-btn-font-family: var(--vyantra-font-family, system-ui, sans-serif);
+  --vyantra-btn-font-weight: var(--vyantra-font-weight-medium, 500);
+  --vyantra-btn-letter-spacing: 0;
+
+  /* Shape — declared with a sentinel that means "use the radius class" */
+  /* Not declared here — .btn--radius-* classes set border-radius directly */
+
+  /* Color + focus vars are intentionally NOT declared here.
+   * var(--vyantra-btn-bg,    var(--btn-color)) falls to --btn-color  ✓
+   * var(--vyantra-btn-focus-ring, var(--btn-focus, ...)) falls through ✓
+   * If we set them to 'initial' the fallback would break.             */
+
+  /* ── Applied values ───────────────────────────────────────────────────── */
+  font-family: var(--vyantra-btn-font-family);
+  font-weight: var(--vyantra-btn-font-weight);
   line-height: var(--vyantra-leading-none, 1);
-  letter-spacing: var(--vyantra-btn-letter-spacing, 0);
+  letter-spacing: var(--vyantra-btn-letter-spacing);
 
   border-width: 1px;
   border-style: solid;
@@ -76,7 +103,15 @@
   outline: none;
   box-shadow:
     0 0 0 2px var(--vyantra-surface-bg, #fff),
-    0 0 0 4px var(--vyantra-btn-focus-ring, var(--vyantra-surface-border-focus, #3b82f6));
+    0 0 0 4px
+      var(--vyantra-btn-focus-ring, var(--btn-focus, var(--vyantra-surface-border-focus, #3b82f6)));
+  /*
+   * Focus ring color cascade (first defined wins):
+   * 1. --vyantra-btn-focus-ring      user override via components.Button.vars()
+   * 2. --btn-focus                   per-intent color set by .btn--intent-* rules
+   * 3. --vyantra-surface-border-focus global focus color from ThemeProvider
+   * 4. #3b82f6                       hardcoded fallback (no ThemeProvider)
+   */
 }
 .btn:active:not(:disabled):not([aria-disabled='true']):not(.btn--loading) {
   transform: scale(0.97);
@@ -468,4 +503,71 @@
 .btn--appearance-link:hover:not(:disabled):not(.btn--loading) {
   color: var(--vyantra-btn-bg-hover, var(--btn-hover));
   text-decoration-thickness: 2px;
+}
+
+/* DECORATED */
+/* Transparent bg with a solid border + inset corner brackets via ::before/::after pseudo-elements.
+   The corner brackets are created using a clipped outline on ::before/::after,
+   giving the layered corner-notch look seen in the screenshot. */
+.btn--appearance-decorated {
+  position: relative;
+  background: transparent;
+  color: var(--vyantra-btn-color, var(--btn-text));
+  padding: 0px;
+  border-radius: 0;
+  overflow: visible;
+  /* faint border */
+  /* border: 1px solid color-mix(in srgb, currentColor 35%, transparent); */
+  border: 1px solid color-mix(in srgb, currentColor 35%, transparent); /* was 35% */
+}
+
+/* corner brackets */
+.btn--appearance-decorated::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+
+  background:
+  /* top-left */
+  linear-gradient(currentColor 0 0) left top / 12px 1px no-repeat,
+  linear-gradient(currentColor 0 0) left top / 1px 12px no-repeat,
+
+  /* top-right */
+  linear-gradient(currentColor 0 0) right top / 12px 1px no-repeat,
+  linear-gradient(currentColor 0 0) right top / 1px 12px no-repeat,
+
+  /* bottom-left */
+  linear-gradient(currentColor 0 0) left bottom / 12px 1px no-repeat,
+  linear-gradient(currentColor 0 0) left bottom / 1px 12px no-repeat,
+
+  /* bottom-right */
+  linear-gradient(currentColor 0 0) right bottom / 12px 1px no-repeat,
+  linear-gradient(currentColor 0 0) right bottom / 1px 12px no-repeat;
+}
+
+/* hover */
+.btn--appearance-decorated:hover:not(:disabled):not(.btn--loading) {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  color: var(--vyantra-btn-bg-hover, var(--btn-hover));
+  /* border-color: color-mix(in srgb, currentColor 50%, transparent); */
+}
+
+/* active */
+.btn--appearance-decorated:active:not(:disabled):not(.btn--loading),
+.btn--appearance-decorated.btn--active {
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  /* border-color: color-mix(in srgb, currentColor 60%, transparent); */
+}
+
+.btn--appearance-decorated .btn__clip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: inherit;
+  flex: 1;
+  overflow: hidden;
+  min-width: 0;
+  padding: 12px 24px;   /* ← padding lives here now */
 }

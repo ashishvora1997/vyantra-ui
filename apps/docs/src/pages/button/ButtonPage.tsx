@@ -61,7 +61,7 @@ const INTENTS: ButtonIntent[] = [
   'danger',
   'info',
 ];
-const APPEARANCES: ButtonAppearance[] = ['solid', 'outline', 'ghost', 'soft', 'link'];
+const APPEARANCES: ButtonAppearance[] = ['solid', 'outline', 'ghost', 'soft', 'link', 'decorated'];
 const SIZES: ButtonSize[] = ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl'];
 const RADII: ButtonRadius[] = ['none', 'sm', 'md', 'lg', 'xl', 'full'];
 
@@ -519,6 +519,40 @@ export const ButtonPage: React.FC = () => {
               </Button>
               <div className="variant-label">primary/link</div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ══ 2b: DECORATED ══ */}
+      <div className="section">
+        <div className="section-header">
+          <div className="section-num">2b</div>
+          <div className="section-title">Decorated</div>
+          <div className="section-desc">outer border + inset corner brackets</div>
+        </div>
+        <div className="doc-card">
+          <div className="btn-grid" style={{ alignItems: 'center' }}>
+            {INTENTS.map((intent) => (
+              <div className="variant-item" key={intent}>
+                <Button intent={intent} appearance="decorated">
+                  {intent}
+                </Button>
+                <div className="variant-label">{intent}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 16 }} className="sub-label">
+            sizes
+          </div>
+          <div className="btn-grid" style={{ alignItems: 'flex-end', marginTop: 8 }}>
+            {SIZES.map((s) => (
+              <div className="variant-item" key={s}>
+                <Button intent="primary" appearance="decorated" size={s}>
+                  {s}
+                </Button>
+                <div className="variant-label">{s}</div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

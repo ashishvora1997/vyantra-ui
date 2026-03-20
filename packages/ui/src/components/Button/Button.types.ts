@@ -20,7 +20,7 @@ export type ButtonIntent =
   | 'danger'
   | 'info';
 
-export type ButtonAppearance = 'solid' | 'outline' | 'ghost' | 'soft' | 'link';
+export type ButtonAppearance = 'solid' | 'outline' | 'ghost' | 'soft' | 'link' | 'decorated';
 
 export type ButtonSize = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 
