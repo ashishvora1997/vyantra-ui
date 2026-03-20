@@ -1,14 +1,138 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>vyantra — Docs</title>
+
+    <!-- ── Primary meta ──────────────────────────────────────────────────── -->
+    <title>Vyantra UI — Lightweight React Design System</title>
+    <meta
+      name="description"
+      content="Vyantra is a lightweight, modular React design system with accessible components, design tokens, and full theming support. Build fast with Button, Text, Grid, and more."
+    />
+    <meta
+      name="keywords"
+      content="vyantra, react, design system, ui library, components, design tokens, theming, typescript, accessible, lightweight"
+    />
+    <meta name="author" content="Ashish Vora" />
+    <meta name="generator" content="Vite" />
+    <link rel="canonical" href="https://vyantra-ui.vercel.app" />
+
+    <!-- ── Robots ─────────────────────────────────────────────────────────── -->
+    <meta name="robots" content="index, follow" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- ── MS / Windows tile ─────────────────────────────────────────────── -->
+    <meta name="msapplication-TileColor" content="#2563eb" />
+    <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+
+    <!-- ── Open Graph (Facebook, LinkedIn, WhatsApp, Slack) ──────────────── -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://vyantra-ui.vercel.app" />
+    <meta property="og:site_name" content="Vyantra UI" />
+    <meta property="og:title" content="Vyantra UI — Lightweight React Design System" />
+    <meta
+      property="og:description"
+      content="Modular React components, design tokens, and full theming. Zero runtime CSS. Built for TypeScript."
+    />
+    <meta property="og:image" content="https://vyantra-ui.vercel.app/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Vyantra UI — React Design System" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:updated_time" content="2026-03-20T00:00:00+00:00" />
+
+    <!-- ── Twitter / X Card ──────────────────────────────────────────────── -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@vyantraui" />
+    <meta name="twitter:creator" content="@ashishvora1997" />
+    <meta name="twitter:url" content="https://vyantra-ui.vercel.app" />
+    <meta name="twitter:title" content="Vyantra UI — Lightweight React Design System" />
+    <meta
+      name="twitter:description"
+      content="Modular React components, design tokens, and full theming. Zero runtime CSS. Built for TypeScript."
+    />
+    <meta name="twitter:image" content="https://vyantra-ui.vercel.app/og-image.png" />
+    <meta name="twitter:image:alt" content="Vyantra UI — React Design System" />
+
+    <!-- ── Theme color (browser chrome) ──────────────────────────────────── -->
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0c0d11" media="(prefers-color-scheme: dark)" />
+
+    <!-- ── Color scheme hint ─────────────────────────────────────────────── -->
+    <meta name="color-scheme" content="light dark" />
+
+    <!-- ── PWA / App hints ───────────────────────────────────────────────── -->
+    <meta name="application-name" content="Vyantra Docs" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Vyantra" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- ── Favicon — inline SVG (no extra request) ───────────────────────── -->
     <link
       rel="icon"
       type="image/svg+xml"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232563eb'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='18' font-weight='700' fill='white' font-family='vyantraui'%3EV%3C/text%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232563eb'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='18' font-weight='700' fill='white' font-family='system-ui'%3EV%3C/text%3E%3C/svg%3E"
     />
+    <!-- PNG fallbacks -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+
+    <!-- ── Preconnect: Google Fonts (used by tokens.css) ─────────────────── -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- ── Anti-FOUC: apply stored color scheme before React mounts ──────── -->
+    <!--
+      Reads vyantra-scheme from localStorage and sets data-theme on <html>
+      synchronously — before any CSS or JS has loaded — so there is never
+      a flash of the wrong theme on page load.
+    -->
+    <script>
+      (function () {
+        try {
+          var s = localStorage.getItem('vyantra-scheme');
+          var t =
+            s === 'dark' || s === 'light'
+              ? s
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+          document.documentElement.setAttribute('data-theme', t);
+        } catch (_) {
+          /* storage blocked — fall back to html attr default */
+        }
+      })();
+    </script>
+
+    <!-- ── JSON-LD structured data ───────────────────────────────────────── -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Vyantra UI",
+        "url": "https://vyantra-ui.vercel.app",
+        "description": "A lightweight, modular React design system with accessible components, design tokens, and full theming support.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "author": {
+          "@type": "Person",
+          "name": "Ashish Vora",
+          "url": "https://github.com/ashishvora1997"
+        },
+        "codeRepository": "https://github.com/ashishvora1997/vyantra-ui",
+        "programmingLanguage": ["TypeScript", "React", "CSS"],
+        "keywords": "react, design system, ui library, components, typescript"
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

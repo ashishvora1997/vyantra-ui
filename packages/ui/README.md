@@ -242,7 +242,7 @@ Use `iconOnly` + `aria-label` for accessible square / pill icon buttons:
 When `href` is provided, the component renders as an `<a>` tag — with full button styling:
 
 ```tsx
-<Button href="https://vyantra.dev" target="_blank">
+<Button href="https://vyantra-ui.vercel.app" target="_blank">
   Open docs ↗
 </Button>
 ```
@@ -449,5 +449,5 @@ See [CHANGELOG.md](../../CHANGELOG.md) for release notes.
 ---
 
 <div align="center">
-  Part of the <strong>Vyantra Design System</strong> · <a href="https://github.com/ashishvora1997/vyantra-ui">GitHub</a> · <a href="https://vyantra.dev">Docs</a>
+  Part of the <strong>Vyantra Design System</strong> · <a href="https://github.com/ashishvora1997/vyantra-ui">GitHub</a> · <a href="https://vyantra-ui.vercel.app">Docs</a>
 </div>
