@@ -19,6 +19,8 @@
 
 /* ── 2. Component styles ──────────────────────────────────────────────────── */
 @import '../components/Button/Button.css';
+@import '../components/VisuallyHidden/VisuallyHidden.css';
+@import '../components/Divider/Divider.css';
 
 /* Future components will be added here:
 @import '../components/Input/Input.css';

@@ -615,4 +615,5 @@
   overflow: hidden;
   min-width: 0;
   padding: 12px 24px; /* ← padding lives here now */
+  height: 100%;
 }

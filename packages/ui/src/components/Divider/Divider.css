@@ -1,0 +1,56 @@
+/* =============================================================================
+   Divider — vyantra/ui
+   ============================================================================= */
+
+/* ── Horizontal (default) ─────────────────────────────────────────────────── */
+.vyantra-divider {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  /* line color + style set via inline style from component */
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* The two line segments */
+.vyantra-divider__line {
+  flex: 1;
+  height: 0;
+  border: none;
+  /* top border = the visible line */
+  border-top-style: var(--_divider-variant, solid);
+  border-top-width: var(--_divider-size, 1px);
+  border-top-color: var(--_divider-color, var(--vyantra-surface-border, #e5e7eb));
+}
+
+/* ── Label ────────────────────────────────────────────────────────────────── */
+.vyantra-divider__label {
+  flex-shrink: 0;
+  padding: 0 var(--_divider-label-gap, var(--vyantra-spacing-3, 12px));
+  font-size: var(--vyantra-font-size-xs, 0.75rem);
+  font-family: var(--vyantra-font-family, system-ui);
+  color: var(--vyantra-text-tertiary, #6b7280);
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* Label position variants */
+.vyantra-divider--label-left .vyantra-divider__line:first-child {
+  flex: 0 0 var(--vyantra-spacing-4, 16px);
+}
+.vyantra-divider--label-right .vyantra-divider__line:last-child {
+  flex: 0 0 var(--vyantra-spacing-4, 16px);
+}
+
+/* ── Vertical ─────────────────────────────────────────────────────────────── */
+.vyantra-divider--vertical {
+  display: block;
+  width: 0;
+  height: 100%;
+  align-self: stretch;
+  border: none;
+  border-left-style: var(--_divider-variant, solid);
+  border-left-width: var(--_divider-size, 1px);
+  border-left-color: var(--_divider-color, var(--vyantra-surface-border, #e5e7eb));
+}
