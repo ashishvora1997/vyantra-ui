@@ -9,7 +9,6 @@ import React, { forwardRef, useCallback, useContext, useRef } from 'react';
 import type { ButtonProps } from './Button.types';
 import { VyantraContext } from '../../theme/context';
 import { cx, createRipple, Slot } from '../../utils';
-import './Button.css';
 
 // ─── Spinner ──────────────────────────────────────────────────────────────────
 
@@ -131,7 +130,7 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement | HTMLEle
         if (rippleTarget) createRipple(event, rippleTarget);
         onClick?.(event as React.MouseEvent<HTMLButtonElement>);
       },
-      [isDisabled, onClick],
+      [isDisabled, onClick, appearance],
     );
 
     // ── Computed root class ──
