@@ -1,0 +1,12 @@
+.vyantra-highlight {
+  font-family: var(--vyantra-font-family, system-ui);
+  margin: 0;
+  padding: 0;
+}
+
+.vyantra-highlight__mark {
+  background: var(--vyantra-color-warning-subtle, #fffbeb);
+  color: inherit;
+  border-radius: var(--vyantra-radius-xs, 2px);
+  padding: 0 2px;
+}

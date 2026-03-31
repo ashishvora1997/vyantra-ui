@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ThemeProvider, useTheme } from './context/ThemeContext';
-import type { ThemeMode } from './context/ThemeContext';
+import { ThemeProvider, createTheme, useScheme } from '@vyantra/ui/theme';
 import { Sidebar } from './components/Sidebar';
 import { SearchModal } from './components/SearchModal';
 import { getPageFromHash, navigateTo } from './router';
@@ -9,17 +8,22 @@ import type { PageId } from './router';
 // ─── Page imports ─────────────────────────────────────────────────────────────
 import { ButtonPage } from './pages/button/ButtonPage';
 import { ThemingPage } from './pages/theme/ThemingPage';
+import { ThemingShowcasePage } from './pages/themingShowcase/ThemingShowcasePage';
 // import { PrimitivesPage } from './pages/primitives/PrimitivesPage';
 import { VisuallyHiddenPage } from './pages/visuallyHiddenPage/VisuallyHiddenPage';
 import { BoxPage } from './pages/box/BoxPage';
 import { PortalPage } from './pages/portal/PortalPage';
 import { DividerPage } from './pages/divider/DividerPage';
-// import { TypographyPage } from './pages/typography/TypographyPage';
-// import { LayoutPage } from './pages/layout/LayoutPage';
+import { TypographyPage } from './pages/typography/TypographyPage';
+import { LayoutPage } from './pages/layout/LayoutPage';
 
 import './styles/globals.css';
+import '@vyantra/ui/styles';
 
-// ─── Inline pages (no separate file needed) ───────────────────────────────────
+// ─── Docs app theme (default — no overrides, just system scheme) ──────────────
+const docsTheme = createTheme({ scheme: 'system' });
+
+// ─── Inline pages ─────────────────────────────────────────────────────────────
 
 const OverviewPage: React.FC = () => (
   <div className="page-content">
@@ -249,21 +253,25 @@ const SearchIcon = () => (
   </svg>
 );
 
-// ─── Topbar ───────────────────────────────────────────────────────────────────
+// ─── Topbar — uses Vyantra's useScheme ────────────────────────────────────────
 
 const Topbar: React.FC<{ onSearchOpen: () => void }> = ({ onSearchOpen }) => {
-  const { mode, setMode } = useTheme();
-  const modes: { value: ThemeMode; icon: React.ReactNode; label: string }[] = [
+  // useScheme() is from @vyantra/ui/theme — reads the ThemeProvider above
+  const { scheme, setScheme, schemePreference } = useScheme();
+
+  type SchemeOption = 'light' | 'dark' | 'system';
+  const modes: { value: SchemeOption; icon: React.ReactNode; label: string }[] = [
     { value: 'light', icon: <SunIcon />, label: 'Light' },
     { value: 'dark', icon: <MoonIcon />, label: 'Dark' },
     { value: 'system', icon: <MonitorIcon />, label: 'System' },
   ];
+
   return (
     <header className="topbar">
       <a href="#/overview" className="topbar-brand" style={{ textDecoration: 'none' }}>
         <div className="topbar-logo-mark">V</div>
         <span className="topbar-logo-text">Vyantra UI</span>
-        <span className="topbar-logo-badge">v0.1.5</span>
+        <span className="topbar-logo-badge">v0.1</span>
       </a>
       <div className="topbar-right">
         <button className="topbar-search" onClick={onSearchOpen} type="button">
@@ -275,8 +283,8 @@ const Topbar: React.FC<{ onSearchOpen: () => void }> = ({ onSearchOpen }) => {
           {modes.map((m) => (
             <button
               key={m.value}
-              className={`theme-mode-btn ${mode === m.value ? 'active' : ''}`}
-              onClick={() => setMode(m.value)}
+              className={`theme-mode-btn ${schemePreference === m.value ? 'active' : ''}`}
+              onClick={() => setScheme(m.value)}
               title={m.label}
               type="button"
             >
@@ -299,7 +307,10 @@ function renderPage(page: PageId): React.ReactNode {
       return <TokensPage />;
     case 'theming':
       return <ThemingPage />;
-    // case 'primitives':      return <PrimitivesPage />;
+    case 'custom-theming':
+      return <ThemingShowcasePage />;
+    // case 'primitives':
+    //   return <PrimitivesPage />;
     case 'visually-hidden':
       return <VisuallyHiddenPage />;
     case 'box':
@@ -308,8 +319,10 @@ function renderPage(page: PageId): React.ReactNode {
       return <PortalPage />;
     case 'divider':
       return <DividerPage />;
-    // case 'typography':      return <TypographyPage />;
-    // case 'layout':          return <LayoutPage />;
+    case 'typography':
+      return <TypographyPage />;
+    case 'layout':
+      return <LayoutPage />;
     case 'button':
       return <ButtonPage />;
     default:
@@ -320,23 +333,18 @@ function renderPage(page: PageId): React.ReactNode {
 // ─── App inner ────────────────────────────────────────────────────────────────
 
 function AppInner() {
-  // Initialise from URL hash on first render
   const [page, setPage] = useState<PageId>(() => getPageFromHash());
   const [searchOpen, setSearchOpen] = useState(false);
 
-  // Listen to hash changes (back/forward, direct URL edits, other tabs)
   useEffect(() => {
     const onHashChange = () => {
-      const next = getPageFromHash();
-      setPage(next);
-      // Scroll to top when page changes via hash navigation
+      setPage(getPageFromHash());
       document.querySelector('.main')?.scrollTo({ top: 0 });
     };
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
-  // ⌘K / Ctrl+K shortcut
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -349,8 +357,8 @@ function AppInner() {
   }, []);
 
   const handleNavigate = useCallback((id: string) => {
-    navigateTo(id); // updates window.location.hash → fires hashchange
-    setPage(id as PageId); // also update state immediately (no flicker)
+    navigateTo(id);
+    setPage(id as PageId);
     setSearchOpen(false);
     document.querySelector('.main')?.scrollTo({ top: 0 });
   }, []);
@@ -371,11 +379,11 @@ function AppInner() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Root — wraps with Vyantra ThemeProvider ──────────────────────────────────
 
 export default function App() {
   return (
-    <ThemeProvider defaultMode="system">
+    <ThemeProvider theme={docsTheme}>
       <AppInner />
     </ThemeProvider>
   );

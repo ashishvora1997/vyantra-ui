@@ -645,29 +645,39 @@ export const ButtonPage: React.FC = () => {
           </div>
           <div className="sub-label">icon-only (square + pill)</div>
           <div className="btn-grid">
-            {(['primary', 'danger', 'success', 'neutral', 'warning', 'secondary', 'info'] as const).map(
-              (int, idx) => {
-                const icons = ['settings', 'trash', 'check', 'bell', 'star', 'copy', 'close', 'github', 'zap'] as const;
-                const ico = icons[idx];
-                return (
-                  <div className="btn-grid" key={int} style={{ gap: 6 }}>
-                    <Button
-                      intent={int}
-                      appearance="soft"
-                      iconOnly={<Icon name={ico} size={14} />}
-                      aria-label={ico}
-                    />
-                    <Button
-                      intent={int}
-                      appearance="soft"
-                      radius="full"
-                      iconOnly={<Icon name={ico} size={14} />}
-                      aria-label={ico}
-                    />
-                  </div>
-                );
-              },
-            )}
+            {(
+              ['primary', 'danger', 'success', 'neutral', 'warning', 'secondary', 'info'] as const
+            ).map((int, idx) => {
+              const icons = [
+                'settings',
+                'trash',
+                'check',
+                'bell',
+                'star',
+                'copy',
+                'close',
+                'github',
+                'zap',
+              ] as const;
+              const ico = icons[idx];
+              return (
+                <div className="btn-grid" key={int} style={{ gap: 6 }}>
+                  <Button
+                    intent={int}
+                    appearance="soft"
+                    iconOnly={<Icon name={ico} size={14} />}
+                    aria-label={ico}
+                  />
+                  <Button
+                    intent={int}
+                    appearance="soft"
+                    radius="full"
+                    iconOnly={<Icon name={ico} size={14} />}
+                    aria-label={ico}
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

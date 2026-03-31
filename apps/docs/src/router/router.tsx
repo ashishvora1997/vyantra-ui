@@ -12,6 +12,7 @@ export const PAGES = [
   'overview',
   'tokens',
   'theming',
+  'custom-theming',
   'primitives',
   'visually-hidden',
   'box',

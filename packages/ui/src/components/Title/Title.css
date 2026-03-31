@@ -1,0 +1,29 @@
+/* =============================================================================
+   Title — vyantra/ui
+   ============================================================================= */
+
+.vyantra-title {
+  font-family: var(--vyantra-font-family, system-ui, sans-serif);
+  color: var(--vyantra-text-primary, #111827);
+  line-height: var(--vyantra-leading-tight, 1.25);
+  margin: 0;
+  padding: 0;
+}
+
+.vyantra-title--h1 { font-size: var(--vyantra-font-size-4xl, 2.25rem);  font-weight: var(--vyantra-font-weight-bold, 700); }
+.vyantra-title--h2 { font-size: var(--vyantra-font-size-3xl, 1.875rem); font-weight: var(--vyantra-font-weight-bold, 700); }
+.vyantra-title--h3 { font-size: var(--vyantra-font-size-2xl, 1.5rem);   font-weight: var(--vyantra-font-weight-semibold, 600); }
+.vyantra-title--h4 { font-size: var(--vyantra-font-size-xl,  1.25rem);  font-weight: var(--vyantra-font-weight-semibold, 600); }
+.vyantra-title--h5 { font-size: var(--vyantra-font-size-lg,  1.125rem); font-weight: var(--vyantra-font-weight-semibold, 600); }
+.vyantra-title--h6 { font-size: var(--vyantra-font-size-md,  1rem);     font-weight: var(--vyantra-font-weight-semibold, 600); }
+
+.vyantra-title--clamp-1 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vyantra-title--clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

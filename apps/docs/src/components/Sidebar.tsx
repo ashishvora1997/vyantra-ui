@@ -21,30 +21,27 @@ const navItems: NavGroup[] = [
       { id: 'overview', label: 'Overview' },
       { id: 'tokens', label: 'Design Tokens' },
       { id: 'theming', label: 'Theming' },
+      { id: 'custom-theming', label: 'Custom Theming' },
     ],
   },
   {
     group: 'Primitives',
     items: [
-      // { id: 'primitives',      label: 'Overview'       },
+      { id: 'primitives', label: 'Overview' },
       { id: 'visually-hidden', label: 'VisuallyHidden' },
       { id: 'box', label: 'Box' },
       { id: 'portal', label: 'Portal' },
       { id: 'divider', label: 'Divider' },
     ],
   },
-  // {
-  //   group: 'Typography',
-  //   items: [
-  //     { id: 'typography', label: 'Typography' },
-  //   ],
-  // },
-  // {
-  //   group: 'Layout',
-  //   items: [
-  //     { id: 'layout', label: 'Layout' },
-  //   ],
-  // },
+  {
+    group: 'Typography',
+    items: [{ id: 'typography', label: 'Typography' }],
+  },
+  {
+    group: 'Layout',
+    items: [{ id: 'layout', label: 'Layout' }],
+  },
   {
     group: 'Components',
     items: [

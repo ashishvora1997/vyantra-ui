@@ -1,0 +1,53 @@
+/* =============================================================================
+   Text — vyantra/ui
+   ============================================================================= */
+
+.vyantra-text {
+  font-family: var(--vyantra-font-family, system-ui, sans-serif);
+  margin: 0;
+  padding: 0;
+}
+
+/* Size scale */
+.vyantra-text--size-2xs { font-size: var(--vyantra-font-size-2xs, 0.625rem); }
+.vyantra-text--size-xs  { font-size: var(--vyantra-font-size-xs,  0.75rem);  }
+.vyantra-text--size-sm  { font-size: var(--vyantra-font-size-sm,  0.875rem); }
+.vyantra-text--size-md  { font-size: var(--vyantra-font-size-md,  1rem);     }
+.vyantra-text--size-lg  { font-size: var(--vyantra-font-size-lg,  1.125rem); }
+.vyantra-text--size-xl  { font-size: var(--vyantra-font-size-xl,  1.25rem);  }
+.vyantra-text--size-2xl { font-size: var(--vyantra-font-size-2xl, 1.5rem);   }
+.vyantra-text--size-3xl { font-size: var(--vyantra-font-size-3xl, 1.875rem); }
+.vyantra-text--size-4xl { font-size: var(--vyantra-font-size-4xl, 2.25rem);  }
+
+/* Weight */
+.vyantra-text--weight-regular  { font-weight: var(--vyantra-font-weight-regular,  400); }
+.vyantra-text--weight-medium   { font-weight: var(--vyantra-font-weight-medium,   500); }
+.vyantra-text--weight-semibold { font-weight: var(--vyantra-font-weight-semibold, 600); }
+.vyantra-text--weight-bold     { font-weight: var(--vyantra-font-weight-bold,     700); }
+
+/* Dimmed */
+.vyantra-text--dimmed { color: var(--vyantra-text-secondary, #4b5563); }
+
+/* Truncate — single line */
+.vyantra-text--truncate-1 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+/* Multi-line clamp */
+.vyantra-text--clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Inherit — for inline use */
+.vyantra-text--inherit {
+  font-size: inherit;
+  font-weight: inherit;
+  font-family: inherit;
+  color: inherit;
+  line-height: inherit;
+}

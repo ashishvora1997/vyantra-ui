@@ -1,0 +1,15 @@
+.vyantra-container {
+  width: 100%;
+  box-sizing: border-box;
+  padding-inline: var(--_container-px, var(--vyantra-spacing-4, 16px));
+}
+
+.vyantra-container--centered { margin-inline: auto; }
+
+.vyantra-container--xs   { max-width: 480px;  }
+.vyantra-container--sm   { max-width: 640px;  }
+.vyantra-container--md   { max-width: 768px;  }
+.vyantra-container--lg   { max-width: 1024px; }
+.vyantra-container--xl   { max-width: 1280px; }
+.vyantra-container--2xl  { max-width: 1536px; }
+.vyantra-container--full { max-width: 100%;   }

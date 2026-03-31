@@ -1,0 +1,38 @@
+/* =============================================================================
+   Label — vyantra/ui
+   ============================================================================= */
+
+.vyantra-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vyantra-spacing-1, 4px);
+  font-family: var(--vyantra-font-family, system-ui);
+  font-weight: var(--vyantra-font-weight-medium, 500);
+  color: var(--vyantra-text-primary, #111827);
+  line-height: var(--vyantra-leading-normal, 1.5);
+  cursor: default;
+  user-select: none;
+}
+
+.vyantra-label--size-xs { font-size: var(--vyantra-font-size-xs,  0.75rem);  }
+.vyantra-label--size-sm { font-size: var(--vyantra-font-size-sm,  0.875rem); }
+.vyantra-label--size-md { font-size: var(--vyantra-font-size-md,  1rem);     }
+.vyantra-label--size-lg { font-size: var(--vyantra-font-size-lg,  1.125rem); }
+
+.vyantra-label--disabled {
+  color: var(--vyantra-text-disabled, #9ca3af);
+  cursor: not-allowed;
+}
+
+.vyantra-label__asterisk {
+  color: var(--vyantra-color-danger-base, #dc2626);
+  line-height: 1;
+  font-size: 0.9em;
+  flex-shrink: 0;
+}
+
+.vyantra-label__optional {
+  font-size: 0.85em;
+  color: var(--vyantra-text-tertiary, #6b7280);
+  font-weight: var(--vyantra-font-weight-regular, 400);
+}
