@@ -1,6 +1,7 @@
 import type { HTMLAttributes, ElementType, CSSProperties } from 'react';
+import { SpacingProps } from '../../utils/spacing';
 
-export interface SimpleGridProps extends HTMLAttributes<HTMLElement> {
+export interface SimpleGridProps extends HTMLAttributes<HTMLElement>, SpacingProps {
   as?: ElementType;
   /**
    * Number of equal columns.

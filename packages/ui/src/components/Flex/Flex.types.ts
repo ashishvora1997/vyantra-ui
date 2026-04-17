@@ -1,11 +1,15 @@
 import type { HTMLAttributes, ElementType, CSSProperties } from 'react';
+import { GapProps, SpacingProps } from '../../utils/spacing';
 
-export interface FlexProps extends HTMLAttributes<HTMLElement> {
+export type WrapKey = 'true' | 'false' | 'wrap' | 'nowrap' | 'wrap-reverse';
+export type FlexWrap = 'nowrap' | 'wrap' | 'wrap-reverse';
+
+export interface FlexProps extends HTMLAttributes<HTMLElement>, SpacingProps, GapProps {
   as?: ElementType;
-  direction?: CSSProperties['flexDirection'];
-  align?: CSSProperties['alignItems'];
-  justify?: CSSProperties['justifyContent'];
-  wrap?: CSSProperties['flexWrap'];
+  direction?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
+  align?: 'start' | 'center' | 'end' | 'stretch' | 'baseline';
+  justify?: 'start' | 'center' | 'end' | 'between' | 'around' | 'evenly';
+  wrap?: FlexWrap;
   gap?: CSSProperties['gap'];
   rowGap?: CSSProperties['rowGap'];
   columnGap?: CSSProperties['columnGap'];

@@ -14,12 +14,12 @@ import React, {
 } from 'react';
 
 import type { ResolvedVyantraTheme } from '@vyantra/tokens';
-import type { VyantraThemeConfig }   from '@vyantra/tokens';
+import type { VyantraThemeConfig } from '@vyantra/tokens';
 import { createTheme, resolveTheme } from '@vyantra/tokens';
 
 // VyantraContextValue is defined in context.ts — import from there
 import { VyantraContext, type VyantraContextValue } from './context';
-import { themeToCSSVars, resolveComponentVars }      from './themeToCSSVars';
+import { themeToCSSVars, resolveComponentVars } from './themeToCSSVars';
 
 // Re-export so consumers can import from either place
 export type { VyantraContextValue } from './context';
@@ -56,14 +56,11 @@ export function ThemeProvider({ children, theme: themeProp }: ThemeProviderProps
   const [schemePref, setSchemePref] = useState<'light' | 'dark' | 'system'>(() => {
     if (typeof window === 'undefined') return config.scheme;
     return (
-      (localStorage.getItem(STORAGE_KEY) as 'light' | 'dark' | 'system' | null)
-      ?? config.scheme
+      (localStorage.getItem(STORAGE_KEY) as 'light' | 'dark' | 'system' | null) ?? config.scheme
     );
   });
 
-  const [scheme, setSchemeResolved] = useState<'light' | 'dark'>(() =>
-    resolveScheme(schemePref),
-  );
+  const [scheme, setSchemeResolved] = useState<'light' | 'dark'>(() => resolveScheme(schemePref));
 
   const resolvedTheme = useMemo<ResolvedVyantraTheme>(
     () => resolveTheme(config, scheme),
@@ -88,6 +85,7 @@ export function ThemeProvider({ children, theme: themeProp }: ThemeProviderProps
     }
 
     el.setAttribute('data-theme', scheme);
+    document.documentElement.setAttribute('data-theme', scheme);
   }, [resolvedTheme, scheme]);
 
   // Follow OS when preference is 'system'
@@ -110,14 +108,17 @@ export function ThemeProvider({ children, theme: themeProp }: ThemeProviderProps
     setScheme(scheme === 'dark' ? 'light' : 'dark');
   }, [scheme, setScheme]);
 
-  const value = useMemo<VyantraContextValue>(() => ({
-    theme:            resolvedTheme,
-    scheme,
-    schemePreference: schemePref,
-    setScheme,
-    toggleScheme,
-    isSystem:         schemePref === 'system',
-  }), [resolvedTheme, scheme, schemePref, setScheme, toggleScheme]);
+  const value = useMemo<VyantraContextValue>(
+    () => ({
+      theme: resolvedTheme,
+      scheme,
+      schemePreference: schemePref,
+      setScheme,
+      toggleScheme,
+      isSystem: schemePref === 'system',
+    }),
+    [resolvedTheme, scheme, schemePref, setScheme, toggleScheme],
+  );
 
   return (
     <VyantraContext.Provider value={value}>

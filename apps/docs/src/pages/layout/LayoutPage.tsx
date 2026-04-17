@@ -299,9 +299,9 @@ import { Container } from '@vyantra/ui';
           </Text>
           <Flex
             align="center"
-            justify="space-between"
+            p={6}
+            justify="between"
             style={{
-              padding: '12px 16px',
               background: 'var(--color-bg-subtle)',
               borderRadius: 'var(--radius-lg)',
               border: '1px solid var(--color-border)',
@@ -332,6 +332,8 @@ import { Container } from '@vyantra/ui';
           <Flex
             direction="column"
             gap="var(--vyantra-spacing-2, 8px)"
+            rowGap="var(--vyantra-spacing-4, 8px)"
+            columnGap="var(--vyantra-spacing-3, 8px)"
             style={{
               padding: '12px',
               background: 'var(--color-bg-subtle)',
@@ -366,7 +368,7 @@ import { Container } from '@vyantra/ui';
           >
             wrap with gap
           </Text>
-          <Flex wrap="wrap" gap="var(--vyantra-spacing-2, 8px)">
+          <Flex wrap="wrap" gap={8}>
             {[
               'React',
               'TypeScript',

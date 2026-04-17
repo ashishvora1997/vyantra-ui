@@ -1,6 +1,7 @@
 import type { HTMLAttributes, ElementType, CSSProperties } from 'react';
+import { GapProps, SpacingProps } from '../../utils/spacing';
 
-export interface GridProps extends HTMLAttributes<HTMLElement> {
+export interface GridProps extends HTMLAttributes<HTMLElement>, SpacingProps, GapProps {
   as?: ElementType;
   /** Number of columns or CSS grid-template-columns value.
    *  Number → repeat(N, 1fr). String → used as-is.
@@ -15,16 +16,17 @@ export interface GridProps extends HTMLAttributes<HTMLElement> {
   /** Row gap only. */
   rowGap?: CSSProperties['rowGap'];
   /** align-items */
-  align?: CSSProperties['alignItems'];
+  align?: 'start' | 'center' | 'end' | 'stretch';
   /** justify-items */
-  justify?: CSSProperties['justifyItems'];
+  justify?: 'start' | 'center' | 'end' | 'stretch';
+  autoFlow?: 'row' | 'column' | 'dense' | 'row dense' | 'column dense';
   /** Inline grid. @default false */
   inline?: boolean;
   className?: string;
   children?: React.ReactNode;
 }
 
-export interface GridColProps extends HTMLAttributes<HTMLElement> {
+export interface GridColProps extends HTMLAttributes<HTMLElement>, SpacingProps, GapProps {
   as?: ElementType;
   /** Column span (1–12 or 'auto'). @default 1 */
   span?: number | 'auto' | 'full';
@@ -35,3 +37,4 @@ export interface GridColProps extends HTMLAttributes<HTMLElement> {
   className?: string;
   children?: React.ReactNode;
 }
+

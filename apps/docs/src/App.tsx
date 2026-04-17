@@ -9,7 +9,7 @@ import type { PageId } from './router';
 import { ButtonPage } from './pages/button/ButtonPage';
 import { ThemingPage } from './pages/theme/ThemingPage';
 import { ThemingShowcasePage } from './pages/themingShowcase/ThemingShowcasePage';
-// import { PrimitivesPage } from './pages/primitives/PrimitivesPage';
+import { PrimitivesPage } from './pages/primitives/PrimitivesPage';
 import { VisuallyHiddenPage } from './pages/visuallyHiddenPage/VisuallyHiddenPage';
 import { BoxPage } from './pages/box/BoxPage';
 import { PortalPage } from './pages/portal/PortalPage';
@@ -309,8 +309,8 @@ function renderPage(page: PageId): React.ReactNode {
       return <ThemingPage />;
     case 'custom-theming':
       return <ThemingShowcasePage />;
-    // case 'primitives':
-    //   return <PrimitivesPage />;
+    case 'primitives':
+      return <PrimitivesPage />;
     case 'visually-hidden':
       return <VisuallyHiddenPage />;
     case 'box':
