@@ -5,12 +5,13 @@
 //  import { ThemeProvider, createTheme } from '@vyantra/ui/theme';
 // =============================================================================
 
-// ─── Button ───────────────────────────────────────────────────────────────────
-export * from './components/Button';
+// ─── Components ────────────────────────────────────────────────────
+export * from './components';
 
 // ─── Shared utilities ─────────────────────────────────────────────────────────
 // cx and createRipple are exported so users can build their own components
 // that follow the same patterns (e.g. ripple effect on custom buttons).
+// ─── Utilities ────────────────────────────────────────────────────────────────
 export { cx, createRipple } from './utils';
 
 // Future components will be added here:

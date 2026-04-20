@@ -19,6 +19,7 @@
 **React component library for the Vyantra design system**
 
 [![npm version](https://img.shields.io/npm/v/@vyantra/ui?color=6366f1&label=npm)](https://www.npmjs.com/package/@vyantra/ui)
+[![npm downloads](https://img.shields.io/npm/dm/@vyantra/ui?style=flat-square&color=10b981)](https://www.npmjs.com/package/@vyantra/ui)
 [![license](https://img.shields.io/badge/license-MIT-blue)](../../LICENSE)
 [![react](https://img.shields.io/badge/react-18%2B-61dafb)](https://react.dev)
 [![typescript](https://img.shields.io/badge/typescript-5%2B-3178c6)](https://www.typescriptlang.org)

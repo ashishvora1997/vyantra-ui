@@ -18,9 +18,4 @@
 @import '@vyantra/tokens/css';
 
 /* ── 2. Component styles ──────────────────────────────────────────────────── */
-@import '../components/Button/Button.css';
-
-/* Future components will be added here:
-@import '../components/Input/Input.css';
-@import '../components/Badge/Badge.css';
-*/
+@import '../components/index.css';
